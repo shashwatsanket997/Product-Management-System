@@ -14,7 +14,9 @@ GlobInv is a product management system which manages different categories of pro
     `Scenario`: Suppose we have two categories as ``Men's Shirts `` and ``Men's Shoes``, any product under these categories will have some properties say ``material``, ``size``, ``type``, ``color``, etc. Moreover, these properties will vary with category say for example in Men's Shirts category will have material like Cotton, Denim, Silk, etc. whereas in the case of Men's Shoes will have material as Canvas, Leather, Rubber, etc. Similarly, other properties will vary with the category.
   2. `Problem 2` : **Managing consistency among the products**<br/>
     `Scenario`: Suppose we have two products under Men's shirts of different brands. The size of these products labeled as "2XL" and "XXL".  As we can see the significance is the same, but the problem is consistency.
-  3. `Problem 3` : Grouping Categories
+  3. `Problem 3` : **How categories can be grouped?**<br/>
+    `Scenario`: ``Men's shirts`` and ``Men's shoes`` will be sub-category of ``Men's Fashion``.
+    
 ### Solution for the above problems: Step-By-Step
   1. `Solution Iteration-1`: According to `Problem-1` it can inferred that different category will have different properites. Let's call these properties as `Category-specfic` properites. To incorporate these properties we introduce `productProps` under category schema.  Thus schema of category will look like:
   ```javascript
@@ -23,22 +25,22 @@ category = {
    productProps: [...listOfProperties ]
 }
 ```
- 2. `Solution Iteration-2`: From `Problem-2 Consistency Problem`. The solution will be to pre-define some set of values for each property and `enforce` the products of this category to have these as attributes as property and the value of the attribute will be from the set of pre-defined values(thus acting as options to choose). Incorporating  this in the category schema: 
+ 2. `Solution Iteration-2`: From `Problem-2 Consistency Problem`. The solution will be, to pre-define some set of values for each category-specific property and `enforce` the ``products`` under this category to have these ``properties`` as ``attributes`` and the ``value`` of the these attributes will be from the set of pre-defined values(thus acting as options to choose) unless it is ``null``(Allowing Custom Value). More *Intuative* in upcoming example. Incorporating this in the category schema: 
  ```javascript
 category = {
   ...otherProps
-   productProps: [ { 
-                    key: prop1 , //Example: material
-                    values: [...listOfPreDefinedValues] // ["Cotton","Denim","Silk"] 
-                   },{ 
-                    key: prop2 ,  //Example: standardSize
-                    values: [...listOfPreDefinedValues] // ["2XL", "XL", "L", "M","S"]
-                   },{
-                    key: prop3  
-                    values: null //Allowing Custom value
-                   }
-                 ]
-    }
+ productProps: [{ 
+    key: prop1 , //Property Example: material
+    values: [...listOfPreDefinedValues] // ["Cotton","Denim","Silk"][Product->material will be one from these] 
+   },{ 
+    key: prop2 ,  //Example: standardSize
+    values: [...listOfPreDefinedValues] // ["2XL", "XL", "L", "M","S"][Product->standardSize will be one from these]
+   },{
+    key: prop3  
+    values: null //Allowing Custom value [Product->prop3 can have any value]
+   }
+ ]
+}
 ```
  3. `Solution Iteration-3`: Using `Hierarchical approach` allowing a category to have multiple child categories. Incorporating this in the category schema as ``parentCategory``. For parent category ``parentCategory`` is ``null``.
  
@@ -47,22 +49,73 @@ category = {
   ...otherProps
    parentCategory: categoryId // null in case of parent category
    productProps: [ { 
-                    key: prop1, 
-                    values: [...listOfPreDefinedValues] 
-                   },{ 
-                    key: prop2, 
-                    values: [...listOfPreDefinedValues] 
-                   },{
-                    key: prop3
-                    values: null //Allowing Custom value
-                   }]
+      key: prop1, 
+      values: [...listOfPreDefinedValues] [Product->prop1 value will be one from these] 
+     },{ 
+      key: prop2, 
+      values: [...listOfPreDefinedValues] [Product->prop2 will be one from these]
+     },{
+      key: prop3
+      values: null //Allowing Custom value
+     }]
     }
 ```
+  Moreover, It leads towards forming a ``new concept``, the concept is similar to OOPs fundamental i.e. `Inheritance` and `Polymorphism(Only Overriding)` but at attribute level. Thus the names can be `Attribute Inheritance and Attribute Overriding`. More *intutative* through given **usecase**: <br/>
+  
+  **Parent Category**: Computers And Accessories <br/>
+   ```javascript
+   {
+   "categoryId": "INV1010",
+  "name": "Computers And Accessories",
+  "gstSlabId": "GST02",
+  "parentCategory": null,
+  "productProps": [
+    {
+      "key": "Specifications",
+      "values": null  // Allowing custom values [Product->Specifications can have any value]
+    }
+  ]} 
+   ```
+   **Child Category**: Laptops
+   ```javascript
+   {
+  "categoryId": "INV1011",
+  "name": "Laptops",
+  "gstSlabId": "GST02",
+  "parentCategory": "INV1010", //Computers And Accessories
+  "productProps": [{
+      "key": "CPUType",
+      "values": ["Intel Core i5","Intel Core i7","Intel Core i3", "AMD E-Series"]
+      },{
+      "key": "memorySize",
+      "values": ["Up to 2GB","4GB","6GB"]
+   }]
+}
+   ```
+  **Product**: HP 14 **[Under Laptops Category]**
+  ```javascript
+  {
+  "productSKU": "compl00142pp12",
+  "name": "HP 14 Core i5 8th Gen 14-inch Thin and Light Laptop",
+  "categoryId": "INV1011", //Under Laptops Category
+  ...otherProps  
+  "Specifications": [  // This is category specific property [Computers And Accessories]
+    "Processor: 8th Generation Intel Core i5-8265U processor, 6 MB cache, 4 cores",
+    "OS: Pre-loaded Windows 10 Home",
+    "Display: 14-inch HD (1366x768) display"
+  ],
+  "CPUType": "Inter Core i5", // This is category specific property [Laptops]
+  "memorySize": "6GB", // This is category specific property [Laptops]
+  } 
+  ```
+  ##### Inference (A must read)
+  From the above example, we see that the  product HP-14 has 3 ``Category-specific`` property as ``Specifications`` from ``Computers and Accessories`` category, ``CPUType`` and ``memorySize`` from ``Laptops`` category. **Reason(why Specifications is present in product defination?)**: As Laptops is child category of Computers and Accessories thus ``inheriting`` parent's ``productProps``(attribute) here ``Specifications`` thus calling as ``Attribute Inheritance``. Similary if the ``property`` both in parent and child is ``same`` then, ``child`` property will be ``used`` thus ``overriding`` the parent property. This is ``Attribute Overriding``.   
+  
 ## System Features
 
 **Note** : Here managing means ``CRUD`` operations, filtering via ``Query paramaeters`` in context to Rest API documentation.
 
-+  A system that can manage ``Different`` categories of products. 
++  A system that can manage, filter ``different`` categories of products. 
 + ``Hierarchical`` based categorical grouping.
 + ``Category-filter`` to ease the search of products.
 +  Managing different ``Brands``.
