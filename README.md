@@ -7,7 +7,6 @@ GlobInv is a product management system which manages different categories of pro
 - [Quick Start(OpenAPI Specs)](#quick-start)
 - [Resources](#resources)
 - [Client SDK](#client-sdk)
-- [Example Schemas](#example-schemas)
 
 ## Solution Framing
 ### The Problems a must read:
@@ -432,15 +431,22 @@ errors: [ "error message 1", "error message 2" ]
     
  ### Caching 
  
+ Caching is a commonly used technique to improve the performance of any application. Specifically using server side caching technique which is responding to the same content for the same request independently of the client’s request. 
  
- ### Cors 
+ ### Cross origin resource sharing
  
- 
-  
+The API supports Cross Origin Resource Sharing (CORS) for AJAX requests from any origin.
 
+```bash
+curl -i BASE_URL -H "Origin: http://anysite.com/api" -X OPTIONS
+HTTP/1.1 204 No Content
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Headers: Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, X-GitHub-OTP, X-Requested-With
+Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE
+Access-Control-Max-Age: 86400
+```
+------
 
- 
- 
   
  
   
