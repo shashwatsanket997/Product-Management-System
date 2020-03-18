@@ -30,13 +30,13 @@ category = {
 category = {
   ...otherProps
    productProps: [ { 
-                    key: prop1 , 
-                    values: [...listOfPreDefinedValues] 
+                    key: prop1 , //Example: material
+                    values: [...listOfPreDefinedValues] // ["Cotton","Denim","Silk"] 
                    },{ 
-                    key: prop2 , 
-                    values: [...listOfPreDefinedValues] 
+                    key: prop2 ,  //Example: standardSize
+                    values: [...listOfPreDefinedValues] // ["2XL", "XL", "L", "M","S"]
                    },{
-                    key: prop3
+                    key: prop3  
                     values: null //Allowing Custom value
                    }
                  ]
@@ -74,7 +74,7 @@ category = {
 **Note** : here managing means ``CRUD`` operations, filtering via ``Query paramaeters`` in context to API documentation.
 
 ## Resources
-The resources for the systems are: 
+The resources for the system are: 
   - [Categories](#categories)
   - [Products](#products)
   - [Brands](#brands)
@@ -89,6 +89,69 @@ The resources for the systems are:
 
 ### Descriptions
 ### Categories
+  **Description**: A way of grouping similar products. <br/>
+  **Schema**:         `*`: required
+   |Attribute| type | Description |
+   |---------|------| ----------- |
+   | categoryId* | ``string``<br/> ``pattern``: *'^[A-Z]{3}[1-9][0-9]{3}$*'| Unique Identifier |
+   | name* | ``string``| Name of the category |
+   | gstSlabId* | ``string``<br/> ``pattern``: *'^GST[0-9]{2}$*'| tax category Id defined in GSTSlabs|
+   | parentCategory* | ``string``<br/> ``pattern``: *'^[A-Z]{3}[1-9][0-9]{3}$*'<br/> `nullable`: ``true`` | #id of parent category (Hierarchical grouping). Refer [Solution Framing](#solution-framing)|
+   | productProps | ``array`` <br/> items: type: ``object `` <br/> ``{ key: 'prop1', values: [...listOfPreDefinedValues ] }`` |  It represent ``category-specific`` property which helps in managing different type of products. Refer [Solution Framing](#solution-framing) |
+   
+ ### Products
+  **Description**: items in the system. <br/>
+  **Schema**:   `*`:required
+   |Attribute| type | Description |
+   |---------|------| ----------- |
+   |productSKU* | `string` | ``SKU``: stock keeping unit as unique identifer|
+   | name* | `string` | name of the product |
+   | categoryId* | ``string``<br/> ``pattern``: *'^[A-Z]{3}[1-9][0-9]{3}$*' | Category the product belonging to |
+   | keywords |``array`` <br/> items: ``string`` | Keywords related to product, facilitate search by keywords|
+   | brandId* | ``string``<br/> ``pattern``: *'^[A-Z]{2}[0-9]{3}$*'| Brand of product |
+   | price* | ``number`` <br/> minimum: 0 | Baseprice of product |
+   | imageURIs | ``array`` <br/> items: ``string($uri)`` | Images as URIs of product |
+   | stock* | ``integer32`` <br/> minimum: 0 | Total quantity of product in the inventory | 
+   | availability* | type: string <br/> ``enum``: ``[online, offline, both]`` | Availability for the sale |
+   | ratings* | ``number`` <br/> minimum: 0 | Cumulative rating of product |
+   | prop1* | ``string`` | ``category-specific`` property declared in Category defination as ``key`` in ``productProps``. Its value will, be from the pre-defined ``values`` in ``productProps``. ``Example: material: "Denim" ``. Refer [Solution Framing](#solution-framing) for Logic description of using this.|
+   | prop2* | ``string`` | ``category-specific`` property declared in Category defination as ``key`` in ``productProps``. Its value will, be from the pre-defined ``values`` in ``productProps``. ``Example: standardSize: "XL" ``. Refer [Solution Framing](#solution-framing) for Logic description of using this.|
+   |lastUpdated* | `date-time`| Date-time when the stock was last updated. |
+   | additionalProp1 | `string` | A ``product-specific`` property.|
+   | additionalProp2 | `string` | A ``product-specific`` property.|
+   
+  ### Brands
+  **Description**: Companies manufacturing products. <br/>
+  **Schema**:   `*`:required
+ |Attribute| type | Description |
+ |---------|------| ----------- |
+ | brandId* | ``string``<br/> ``pattern``: *'^[A-Z]{2}[0-9]{3}$*' | Unique Identifier |
+ | name* | ``string``| Company name |
+ | website | ``string($uri)`` | Website of company. | 
+ | email* | ``string($email)`` | Support email from the company. |
+
+ ### Suppliers
+  **Description**: Vendors supplying the products. <br/>
+  **Schema**:   `*`:required
+ |Attribute| type | Description |
+ |---------|------| ----------- |
+ | supplierId* | ``string``<br/> ``pattern``: *'^[A-Z]{2}[0-9]{3}$*' | Unique Identifier |
+ | name* | ``string``| Supplier name |
+ | address | ``string($uri)`` | address of supplier. | 
+ | email* | ``string($email)`` | Support email from the supplier. |
+ 
+### ReorderPoints
+  **Description**: Vendors supplying the products. <br/>
+  **Schema**:   `*`:required
+  
+
+ 
+ 
+ 
+   
+   
+    
+   
   
 
 
