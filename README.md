@@ -376,10 +376,63 @@ errors: [ "error message 1", "error message 2" ]
  | Relative Date  |  `string` |``/invoices?rdate=today``| ``/invoices?rdate=today``| 
  |start_date and end_date | `string` |``/invoices?start_date=d1&end_date=d2``|``/invoices?start_date=2020-03-12&end_date=2020-03-15``| 
   
- #### Pagination 
- #### Action 
+ #### Pagination
+ Sometimes, there'll be a lot of results to return via an API . For that reason, we paginate the results to make sure responses are easier to handle. Pagination is done using the query parameter.
  
+ **Pagination Parameters**
+ 
+ `page`: Page number to fetch. type: `integer32`. minimum: 1
+ 
+ `limit`: Number of documents per page. type: `integer32`, minimum: 1, default: 20
+
+ #### Action 
+  Here,  **Query parameters** can also be used as action triggerer. In ``GlobInv`` `Categories` and `ReorderPoints` use these action triggerer.
+  
+  1. **Categories**
+  
+  **Action**: To fetch all the `sub-categories` of a category.
+ 
+  `Endpoint`: **`GET`** /categories/{categoryId}
+  
+  `parameter`:  subCategories , `type`: boolean
+  
+  **Response subCategories=true**
+  ```javascript
+  {
+  "id": "INV1200",
+  "name": "Men's Fashion",
+  "gstSlabId": "GST01",
+  "parentCategory": null,
+  "productProps": [],
+  "subCategories": [
+    {
+      "id": "INV1201",
+      "name": "Men's Shirts"
+    },
+    {
+      "id": "INV1202",
+      "name": "Men's Shoes"
+    },
+    {
+      "id": "INV1203",
+      "name": "Men's Pants"
+    }
+  ]
+}
+  ```
+  
+  2. **ReorderPoints**
+  
+  **Action**: To fetch all the product which need stock replenishment, i.e. their stock number is less than threshold.
+ 
+  `Endpoint`: **`GET`** /reorderPoints
+  
+  `parameter`:  replenish , `type`: boolean
+  
+    
  ### Caching 
+ 
+ 
  ### Cors 
  
  
