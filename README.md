@@ -1,5 +1,5 @@
 # GlobInv | Product Management System
-GlobInv is a product management system which manages different categories of products along with stock-tracking, filtering and billings. A REST API driven system built on `node js` with `OpenAPI swagger` documentation.
+GlobInv is a product management system which manages different categories of products along with stock-tracking, filtering and billings. A REST API driven system built on `node js` with `OpenAPI swagger` [documentation](#quick-start).
 ## Overview 
 
 - [Solution Framing](#solution-framing)
@@ -73,7 +73,7 @@ category = {
 +  Managing different Tax slabs as ``GST taxation`` of  ``India``.
 
 ## Quick Start
-#### OpenAPI Swagger Specification: [click here](https://app.swaggerhub.com/apis-docs/S3649/Product-Management-System/1.0.0)
+### OpenAPI Swagger Specification: [click here](https://app.swaggerhub.com/apis-docs/S3649/Product-Management-System/1.0.0)
 
 ## Resources
 The resources for the system are: 
