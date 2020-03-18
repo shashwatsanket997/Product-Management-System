@@ -1,0 +1,2442 @@
+openapi: 3.0.0
+info:
+  version: '1.0.0'
+  title: 'REST APIs for GlobInv | Product Management System'
+  description: 'GlobInv is a product management system which manages different categories of products along with stock-tracking, filtering and billings.'
+  
+# Added by API Auto Mocking Plugin
+
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/S3649/Product-Management-System/1.0.0
+  - description: Production Server
+    url: http://sample.com/api
+  - description: Stagging Server 
+    url: htpp://localhost:5000/api
+    
+tags:
+  - name: Categories
+    description: A way of grouping products.
+  - name: Products
+    description: Items in the invetory, identified using ProductSKU(Product stock keeping unit)
+  - name: Brands
+    description: Companies manufacturing products
+  - name: Suppliers
+    description: Vendors supplying the products
+  - name: ReorderPoints 
+    description: It is a minimum quantity of an item which a firm holds in stock. Used for pre-notifications to replenish the stocks
+  - name: Invoices
+    description: A detailed breakdown of price, discount and tax for the list of products selected.
+  - name: Offers
+    description: Deduction amounts for products.
+  - name: GSTSlabs
+    description: Different tax slab as per Goods and Services Tax.
+  - name: Auth
+    description: Authentication Related API endpoints.
+  - name: Users
+    description: Users using the system.
+  - name: Images
+    description: Endpoint to upload images, and get public URI of the uploaded image
+    
+paths: 
+  /categories:
+    get:
+      summary: Get all the categories
+      tags:
+        - Categories
+      operationId: getCategories
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+      responses:
+        '200':
+          description: List of all categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  docs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Category"
+                  page:
+                    type: integer
+                    minimum: 1
+                    example: 1 
+                  pages:
+                    type: integer
+                    minimum: 1
+                    example: 5 
+                    description: Total pages
+    post:
+      summary: Create a category
+      security:
+        - bearerAuth: []
+      tags:
+        - Categories
+      operationId: createCategory
+      requestBody:
+        description: >
+            If there is no parent category, give ``parentCategory`` as ``null``.
+            <br/>
+            ``productProps`` represents **category-specific** properties, which insures that the products belonging to this category, to have these props as **required** attributes.
+            <br/>
+            **Example**:  Men's Shirts can have productProps as ``material`` whose values can be ``["Cotton", "Denim","linen"]`` or as ``standardSize`` whose values can be ``["2XL","XL","L","M","S"]``. The product under this category say for example, Denis Lingo Shirt(A product name) will have attributes as ``material: Cotton`` and ``standardSize: XL``.
+            <br/>
+            Refer [documentation](https://github.com/shashwatsanket997/Product-Management-System#solution-framing) for detailed attribute definations.  
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Category"
+            examples:
+              MensFashion:
+                $ref: '#/components/examples/MensFashion'
+              MensShirts:
+                $ref: '#/components/examples/MensShirts'
+              Computers:
+                $ref: '#/components/examples/Computers'
+              Laptops:
+                $ref: '#/components/examples/Laptops'
+      responses:
+        '201':
+            description: Category Successfully Created.
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/GenericResponseWithLinks"
+                example:
+                  status: success
+                  message: "Category added successfully"
+                  href: "/categories/INV1200"
+                
+        '400':
+            $ref: '#/components/responses/ValidationError'
+        '401':
+            $ref: '#/components/responses/UnauthorizedError'
+            
+  /categories/{categoryId}:
+    get:
+      summary: Get details of a category
+      tags:
+        - Categories
+      operationId: getCategory
+      parameters:
+        - $ref: "#/components/parameters/CategoryId"
+        - in: query
+          name: subCategories
+          description: To fetch all the ``subcategories`` of the given category.
+          schema:
+            type: boolean
+          required: false
+      responses:
+        '200':
+          description: Details of a category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+              examples:
+                withoutSubCategories:
+                    $ref: "#/components/examples/withoutSubCategories"
+                withSubCategories:
+                    $ref: "#/components/examples/withSubCategories"
+        '400':
+            $ref: '#/components/responses/ValidationError'
+        '404':
+            $ref: '#/components/responses/404NotFoundError'
+    put:
+      summary: To update the category with the id
+      security: 
+        - bearerAuth: []
+      tags:
+        - Categories
+      operationId: editCategory
+      parameters:
+        - $ref: "#/components/parameters/CategoryId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+            examples:
+              MensFashion:
+                $ref: '#/components/examples/MensFashion'
+              MensShirts:
+                $ref: '#/components/examples/MensShirts'
+      responses:
+        '200':
+          description: Category updated successfully. 
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponseWithLinks"
+              example:
+                status: success
+                message: "Category updated successfully"
+                href: "/categories/INV1200"
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'
+        
+    
+    patch:
+      summary: To update specific attribute in a category
+      description: Helpful in adding, removing, and updating the attributes of a category. Refer usecases and [documentation](https://github.com/shashwatsanket997/Product-Management-System#patch-operation-schema)
+      tags:
+        - Categories
+      security: 
+        - bearerAuth: []
+      operationId: updateCategory
+      parameters:
+        - $ref: "#/components/parameters/CategoryId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array 
+              items:
+                $ref: "#/components/schemas/PatchOps"
+            examples:
+              AddValueToProductProps:
+                $ref: "#/components/examples/AddValueToProductProps"
+              AddValuesToProductProps:
+                $ref: "#/components/examples/AddValuesToProductProps"
+              RemoveValueToProductProps:
+                $ref: "#/components/examples/RemoveValueToProductProps"
+              RemoveValuesToProductProps:
+                $ref: "#/components/examples/RemoveValuesToProductProps"
+              UpdateAttributes:
+                $ref: "#/components/examples/UpdateAttributes"
+      
+      responses:
+        '200':
+          description: Successfully Updated the category.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponseWithLinks"
+              example:
+                status: "success"
+                message: "Successfully updated the category"
+                href: "/categories/INV1200"
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'
+    delete:
+      summary: To delete a category.
+      security: 
+        - bearerAuth: []
+      description: Remove a category, all subcategories of the category and the products associated to them
+      tags:
+        - Categories
+      operationId: deleteCategory
+      parameters:
+        - $ref: "#/components/parameters/CategoryId"
+      responses:
+        '200':
+          description: Successfully deleted the category , all its sub-categories and products associated with it.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                status: "success"
+                message: "Successfully deleted the category, all its sub-categories and products"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'
+  /categories/{categoryId}/products:
+    get:
+      summary: To get all the products of a specific category. Apply filters for customized result.
+      tags:
+        - Categories
+      operationId: getProductsByCategory
+      parameters:
+        - $ref: '#/components/parameters/CategoryId'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: "#/components/parameters/keywordFilter"
+        - $ref: "#/components/parameters/SpecificFilter"
+        - $ref: "#/components/parameters/ComplexProductFilterParam"
+      responses:
+        '200':
+          description: List of all products of a category
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  docs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Product"
+                  page:
+                    type: integer
+                    minimum: 1
+                    example: 1 
+                  pages:
+                    type: integer
+                    minimum: 1
+                    example: 5 
+                    description: Total pages
+        '400': ## Invalid Query Parameters
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'
+  
+  /products:
+    get:
+      summary: "Get all the products. Apply filters for customized result"
+      tags:
+        - Products
+      operationId: getProducts
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: "#/components/parameters/keywordFilter"
+        - $ref: "#/components/parameters/SpecificFilter"
+        - $ref: "#/components/parameters/ComplexProductFilterParam"
+      responses:
+        '200':
+          description: List of all products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  docs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Product"
+                  page:
+                    type: integer
+                    minimum: 1
+                    example: 1 
+                  pages:
+                    type: integer
+                    minimum: 1
+                    example: 5 
+                    description: Total pages
+        '400': ## Invalid Query Parameters
+          $ref: '#/components/responses/ValidationError'
+    post:
+      summary: Create a product
+      tags:
+        - Products
+      security: 
+        - bearerAuth: []
+      operationId: createProduct
+      requestBody:
+        description: >
+              Here, **category-specific** properties(productProps) keys are also required as attributes, and value can only be from the array declared for a particular key in productProps, unless it is null(custom value). 
+              
+              <br/>
+              **Usescase description**
+              
+              1. Dennis Lingo Shirt under Men's shirts Category-> Under Men's shirts category, ``material`` and ``size`` are the category-specific properties mentioned in productProps(See POST /categories usecase). Thus the product under this category will have these as required attributes.
+              
+              2. HP14 under Laptops Category-> Under Laptops category, ``specifications``(From parent[Computer & Asccessories]), ``CPUType`` and ``memorySize`` are the category-specific properties mentioned in the productProps(See POST /categories usecase). Thus will be required attributes.
+              
+               Refer [documentation](https://github.com/shashwatsanket997/Product-Management-System#products) for detailed attribute definations.  
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+            examples:
+              DennisLingo:
+                $ref: '#/components/examples/DennisLingo'
+              HP14:
+                $ref: '#/components/examples/HP14'
+      responses:
+        '201':
+            description: Product Successfully Created.
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/GenericResponseWithLinks"
+                example:
+                  status: success
+                  message: "Product added successfully"
+                  href: "/products/hewl2221md21"
+                
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    
+  /products/{productSKU}:
+    get:
+      summary: Get details of a product
+      tags:
+        - Products
+      operationId: getProduct
+      parameters:
+        - $ref: "#/components/parameters/ProductSKU"
+      responses:
+        '200':
+          description: Details of a product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'
+    put:
+      summary: To edit a product.
+      security: 
+        - bearerAuth: []
+      tags:
+        - Products
+      operationId: editProduct 
+      parameters:
+        - $ref: "#/components/parameters/ProductSKU"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+            examples:
+              DennisLingo:
+                $ref: '#/components/examples/DennisLingo'
+              HP14:
+                $ref: '#/components/examples/HP14'
+      responses:
+        '200':
+          description: Product updated successfully. 
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/GenericResponse"
+                  - type: object
+                    properties:
+                      href:
+                        type: string
+                        format: uri
+                example:
+                  status: success
+                  message: "Product updated successfully"
+                  href: "/products/hewl2221md21"
+                  
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'
+    delete:
+      summary: To delete a product.
+      security: 
+        - bearerAuth: []
+      tags:
+        - Products
+      operationId: deleteProduct
+      parameters:
+        - $ref: "#/components/parameters/ProductSKU"
+      responses:
+        '200':
+          description: Successfully deleted the product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                status: "success"
+                message: "Successfully deleted the product"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'
+    patch:
+      summary: To update specific attribute in a product
+      description: Helpful in adding, removing, and updating the attributes.Refer usecases and [documentation](https://github.com/shashwatsanket997/Product-Management-System#patch-operation-schema)
+      security: 
+        - bearerAuth: []
+      tags:
+        - Products
+      operationId: updateProduct
+      parameters:
+        - $ref: "#/components/parameters/ProductSKU"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array 
+              items:
+                $ref: "#/components/schemas/PatchOps"
+            examples:
+              AddRemoveValueToKeywords:
+                $ref: "#/components/examples/AddRemoveValue"
+              AddRemoveValuesToKeywords:
+                $ref: "#/components/examples/AddRemoveValues"
+              UpdateAnAttribute:
+                $ref: "#/components/examples/UpdateAnAttribute"
+      
+      responses:
+        '200':
+          description: Successfully Updated the category.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                status: "success"
+                message: "Successfully Updated the category"
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'
+  /suppliers:
+    get:
+      summary: Get all suppliers
+      tags:
+        - Suppliers
+      operationId: getSuppliers
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+      responses:
+        '200':
+          description: List of all suppliers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  docs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Supplier"
+                  page:
+                    type: integer
+                    minimum: 1
+                    example: 1 
+                  pages:
+                    type: integer
+                    minimum: 1
+                    example: 5 
+                    description: Total pages
+    post:
+      summary: Create a Supplier
+      tags:
+        - Suppliers
+      operationId: createSupplier
+      security: 
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Supplier"
+      responses:
+        '201':
+            description: Supplier Successfully Created.
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/GenericResponseWithLinks"
+                example:
+                  status: success
+                  message: "Supplier added successfully"
+                  href: "/suppliers/SP101"
+        '401':
+            $ref: '#/components/responses/UnauthorizedError'
+        '400':
+            $ref: '#/components/responses/ValidationError'
+    
+  /suppliers/{supplierId}:  
+    get:
+      summary: Get details of a supplier
+      tags:
+        - Suppliers
+      operationId: getSupplier
+      parameters:
+        - $ref: "#/components/parameters/SupplierId"
+      responses:
+        '200':
+          description: Details of a supplier
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'
+    put:
+      summary: To edit a supplier.
+      tags:
+        - Suppliers
+      operationId: editSupplier 
+      security: 
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/SupplierId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+      responses:
+        '200':
+          description: Supplier updated successfully. 
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponseWithLinks"
+              example:
+                status: success
+                message: "Supplier updated successfully"
+                href: "/suppliers/SP101"
+                  
+        '400':
+            $ref: '#/components/responses/ValidationError'
+        '401':
+            $ref: '#/components/responses/UnauthorizedError'
+        '404':
+            $ref: '#/components/responses/404NotFoundError'
+    delete:
+      summary: To delete a supplier.
+      security: 
+        - bearerAuth: []
+      tags:
+        - Suppliers
+      operationId: deleteSupplier
+      parameters:
+        - $ref: "#/components/parameters/SupplierId"
+      responses:
+        '200':
+          description: Successfully deleted the supplier
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                status: "success"
+                message: "Successfully deleted the supplier"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'  
+  /suppliers/{supplierId}/products:
+    get:
+      summary: To get all the products of a specific supplier.
+      tags:
+        - Suppliers
+      operationId: getProductsBySupplier
+      parameters:
+        - $ref: '#/components/parameters/SupplierId'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+      responses:
+        '200':
+          description: List of all products of a supplier
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  docs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Product"
+                  page:
+                    type: integer
+                    minimum: 1
+                    example: 1 
+                  pages:
+                    type: integer
+                    minimum: 1
+                    example: 5 
+                    description: Total pages
+        '404':
+          $ref: '#/components/responses/404NotFoundError'
+
+  /brands:
+    get:
+      summary: Get all brands
+      tags:
+        - Brands
+      operationId: getBrands
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+      responses:
+        '200':
+          description: List of all brands
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  docs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Brand"
+                  page:
+                    type: integer
+                    minimum: 1
+                    example: 1 
+                  pages:
+                    type: integer
+                    minimum: 1
+                    example: 5 
+                    description: Total pages
+    post:
+      summary: Create a Brand
+      tags:
+        - Brands
+      operationId: createBrand
+      security: 
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Brand"
+      responses:
+        '201':
+            description: Brand Successfully Created.
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/GenericResponseWithLinks"
+                example:
+                  status: success
+                  message: "Brand added successfully"
+                  href: "/brands/BR101"
+        
+        '400':
+            $ref: '#/components/responses/ValidationError'
+        '401':
+            $ref: '#/components/responses/UnauthorizedError'
+  /brands/{brandId}:  
+    get:
+      summary: Get details of a brand
+      tags:
+        - Brands
+      operationId: getBrand
+      parameters:
+        - $ref: "#/components/parameters/BrandId"
+      responses:
+        '200':
+          description: Details of a Brand
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Brand'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'
+    put:
+      summary: To edit a brand.
+      tags:
+        - Brands
+      operationId: editBrand 
+      security: 
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/BrandId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Brand'
+      responses:
+        '200':
+          description: Brand updated successfully. 
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/GenericResponseWithLinks"
+              example:
+                status: success
+                message: "Brand updated successfully"
+                href: "/brands/BR101"
+                  
+        '400':
+            $ref: '#/components/responses/ValidationError'
+        '401':
+            $ref: '#/components/responses/UnauthorizedError'
+        '404':
+            $ref: '#/components/responses/404NotFoundError'
+      
+    delete:
+      summary: To delete a brand.
+      tags:
+        - Brands
+      operationId: deleteBrand
+      security: 
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/BrandId"
+      responses:
+        '200':
+          description: Successfully deleted the brand
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                status: "success"
+                message: "Successfully deleted the brand"
+        '404':
+          $ref: '#/components/responses/404NotFoundError'  
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /brands/{brandId}/products:
+    get:
+      summary: To get all the products of a specific brand.
+      tags:
+        - Brands
+      operationId: getProductsByBrand
+      parameters:
+        - $ref: '#/components/parameters/BrandId'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+      responses:
+        '200':
+          description: List of all products of a supplier
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  docs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Product"
+                  page:
+                    type: integer
+                    minimum: 1
+                    example: 1 
+                  pages:
+                    type: integer
+                    minimum: 1
+                    example: 5 
+                    description: Total pages
+        '404':
+          $ref: '#/components/responses/404NotFoundError'
+  /gstslabs:
+    get:
+      summary: Get all slabs in GST taxation.
+      tags:
+        - GSTSlabs
+      operationId: getGSTSlabs
+      responses:
+        '200':
+          description: List of all slabs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GSTSlab"
+    post:
+      summary: Create a slab in the GST taxation.
+      tags:
+        - GSTSlabs
+      security: 
+        - bearerAuth: []
+      operationId: createGSTSlab
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GSTSlab"
+      responses:
+        '201':
+            description: GSTSlab Successfully Created.
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/GenericResponseWithLinks"
+                example:
+                  status: success
+                  message: "GSTSlab added successfully"
+                  href: "/gstslabs/GST01"
+                
+        '400':
+            $ref: '#/components/responses/ValidationError'
+        '401':
+            $ref: '#/components/responses/UnauthorizedError'
+  /gstslabs/{gstslabId}:  
+    get:
+      summary: Get details of a GST slab.
+      tags:
+        - GSTSlabs
+      operationId: getGSTSlab
+      parameters:
+        - $ref: "#/components/parameters/GSTSlabId"
+      responses:
+        '200':
+          description: Details of a GST slab.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GSTSlab'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'
+    put:
+      summary: To edit a slab in GST taxation.
+      tags:
+        - GSTSlabs
+      operationId: editGSTSlab 
+      security: 
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/GSTSlabId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GSTSlab'
+      responses:
+        '200':
+          description: GST slab updated successfully. 
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponseWithLinks"
+              example:
+                status: success
+                message: "GST slab updated successfully"
+                href: "/gstslabs/GST01"
+                  
+        '400':
+            $ref: '#/components/responses/ValidationError'
+        '401':
+            $ref: '#/components/responses/UnauthorizedError'
+        '404':
+            $ref: '#/components/responses/404NotFoundError'
+    delete:
+      summary: To delete a slab in the GST taxation.
+      description: Deleting the slab, will make the product category under this taxation as non taxable. 
+      tags:
+        - GSTSlabs
+      operationId: deleteGSTSlab
+      security: 
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/GSTSlabId"
+      responses:
+        '200':
+          description: Successfully deleted the slab.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                status: "success"
+                message: "Successfully deleted the slab"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'  
+  
+  /images:
+    post:
+      summary: Upload multiple images.
+      tags:
+        - Images
+      operationId: uploadImages
+      security: 
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        "200":
+          description: "Successfully uploded the files"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  fileURIs:
+                    type: array
+                    items:
+                      type: string
+                      format: uri
+                    example:
+                      - "/images/img102231.png"
+                      - "/images/img1025321.png"
+                
+        "400":
+          description: "Validation Error (Bad Request). Possible validation error can be ``File Size Limit``, ``Invalid File Format`` etc."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              example:
+                errorType: "Validation Error"
+                errors: ["File img1.png size is greater that 10MB",
+                "File img1.txt is not a valide image."]
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /images/{filename}:
+    get:
+      operationId: getImage
+      tags:
+        - Images
+      summary: Returns an image
+      parameters:
+        - in: path
+          name: filename
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: An image file.
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+        "404":
+          $ref: '#/components/responses/404NotFoundError'
+          
+  /offers:
+    get:
+      summary: Get all the offers available.
+      tags:
+        - Offers
+      operationId: getOffers
+      responses:
+        '200':
+          description: List of all offers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Offer"
+    post:
+      summary: Create an offer.
+      tags:
+        - Offers
+      operationId: createOffer
+      security: 
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Offer"
+      responses:
+        '201':
+            description: Offer Successfully Created.
+            content:
+              application/json:
+                schema:
+                    $ref: "#/components/schemas/GenericResponseWithLinks"
+                example:
+                  status: success
+                  message: "Offer added successfully"
+                  href: "/offers/hewl2221md21"
+                
+        '400':
+            $ref: '#/components/responses/ValidationError'
+        '401':
+            $ref: '#/components/responses/UnauthorizedError'
+    
+  /offers/{productSKU}:  
+    get:
+      summary: Get Offer details for a product.
+      tags:
+        - Offers
+      operationId: getOffer
+      parameters:
+        - $ref: "#/components/parameters/ProductSKU"
+      responses:
+        '200':
+          description: Offer details for a product.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'
+    put:
+      summary: To edit an offer.
+      tags:
+        - Offers
+      operationId: editOffer
+      security: 
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ProductSKU"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Offer'
+      responses:
+        '200':
+          description: Offer for a product updated successfully. 
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponseWithLinks"
+              example:
+                status: success
+                message: "Offer updated successfully"
+                href: "/offers/hewl2221md21"
+        '400':
+            $ref: '#/components/responses/ValidationError'
+        '401':
+            $ref: '#/components/responses/UnauthorizedError'
+        '404':
+            $ref: '#/components/responses/404NotFoundError'
+    delete:
+      summary: To delete an offer. 
+      tags:
+        - Offers
+      operationId: deleteOffer
+      security: 
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ProductSKU"
+      responses:
+        '200':
+          description: Successfully deleted the Offer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                status: "success"
+                message: "Successfully deleted the Offer"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'
+  /auth:
+    post:
+      summary: Authenticate via credentials to get authentication token.
+      tags:
+        - Auth
+      operationId: authenticate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: 
+                username:
+                  type: string
+                  format: email
+                password:
+                  type: string
+            example:
+                username: "shashwat@xyz.com"
+                password: "asdf@1007"
+      responses:
+        "200": 
+          $ref: "#/components/responses/AuthToken"
+        "401":
+            description: "Authentication error. Invalid credentials provided."
+            content:
+              application/json:
+                schema:
+                  $ref:  "#/components/schemas/GenericError"
+                example:
+                  status: 
+                    errorType: "Invalid Credentials"
+                    errors: ["username or password invalid"]
+  /users:
+    get: 
+      tags: 
+        - Users
+      summary: "To get all the users in the system."
+      description: "``Permission`` **:** ``admin``"
+      operationId:  getUsers
+      security: 
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "To get all the users"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      tags:
+        - Users
+      summary: "Register a user"
+      description: "Admin can create multiple users as ``manager``, for the system. ``Permission`` **:** ``admin``"
+      requestBody:
+        $ref: "#/components/requestBodies/UserRegister"
+      security: 
+        - bearerAuth: []
+      responses:
+        "201":
+          description: "User successfully created"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/GenericResponse"
+                  - type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          id: # New id 
+                            type: string
+                            format: uuid
+                          href:
+                            type: string
+                            format: uri
+                          name:
+                            type: string
+                    example:
+                      status: success
+                      message: "User created successfully"
+                      user:
+                        id: "2324dsf2s23ds3e2323mfad23"
+                        name: "Silber"
+                        href: "/users/silber"
+        '400':
+            $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    
+  /users/{username}:
+    get:
+      summary: Get details for a user.
+      security: 
+        - bearerAuth: []
+      tags:
+        - Users
+      operationId: getUser
+      parameters:
+        - $ref: "#/components/parameters/Username"
+      responses:
+        '200':
+          $ref: "#/components/responses/UserDetails"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'
+    patch:
+      tags:
+        - Users
+      summary: To edit specific attribute for a user, example password.
+      operationId: updateUser
+      security: 
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/Username"
+      description: Helpful in updating ``password``, ``name``, ``userType``
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array 
+              items:
+                $ref: "#/components/schemas/PatchOps"
+            examples:
+              UpdatePassword:
+                $ref: "#/components/examples/UpdatePassword"
+              UpdateName:
+                $ref: "#/components/examples/UpdateName"
+              UpdateUserType:
+                $ref: "#/components/examples/UpdateUserType"
+      responses:
+        '200':
+          description: Successfully updated the user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                status: "success"
+                message: "Successfully Updated the user"
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'
+    delete:
+      summary: To delete a user. 
+      security: 
+        - bearerAuth: []
+      tags:
+        - Users
+      operationId: deleteUser
+      parameters:
+        - $ref: "#/components/parameters/Username"
+      responses:
+        '204':
+          description: (No Content) Successfully deleted the username.
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'
+
+  /invoices:
+    get:
+      summary: Get all invoices.
+      tags:
+        - Invoices
+      operationId: getInvoices
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+        - name: rdate
+          in: query
+          schema:
+            type: string
+          description: >
+             Filter invoices by relative date range , such as `Today` or `LastWeek`.
+             For an exact range, use `start_date` and `end_date` instead.
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: >
+            The start date for the report. Must be used together with `end_date`.
+            This parameter is incompatible with `rdate`.
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: >
+            The end date for the report. Must be used together with `start_date`.
+            This parameter is incompatible with `rdate`.
+      responses:
+        '200':
+          description: List of all invoices
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  docs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Invoice"
+                  page:
+                    type: integer
+                    minimum: 1
+                    example: 1
+                  pages:
+                    type: integer
+                    minimum: 1
+                    example: 5 
+                    description: Total pages
+    post:
+      summary: Create an Invoice.
+      security: 
+        - bearerAuth: []
+      tags:
+        - Invoices
+      operationId: createInvoice
+      requestBody:
+        $ref: "#/components/requestBodies/CreateInvoice"
+      responses:
+        '201':
+            description: Invoice Successfully Created.
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/GenericResponseWithLinks"
+                example:
+                  status: success
+                  message: "Invoice successfully created"
+                  href: "/invoices/2342-2345-1201"
+        '400':
+            $ref: '#/components/responses/ValidationError'
+        '401':
+            $ref: '#/components/responses/UnauthorizedError'
+  /invoices/{invoiceId}:  
+    get:
+      summary: Get Invoice with detailed price breakdown.
+      tags:
+        - Invoices
+      operationId: getInvoice
+      parameters:
+        - $ref: "#/components/parameters/InvoiceId"
+      responses:
+        '200':
+          description: Invoice.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'
+    delete:
+    
+      summary: To delete an invoice.
+      tags:
+        - Invoices
+      operationId: deleteInvoice
+      security: 
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/InvoiceId"
+      responses:
+        '200':
+          description: Successfully deleted the invoice.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                status: "success"
+                message: "Successfully deleted the invoice"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/404NotFoundError'  
+  /reorderPoints:
+    get: 
+      tags:
+        - ReorderPoints
+      summary: Get all the reorder points.
+      description: It is a minimum quantity of an item which a firm holds in stock. Used for pre-notifications to replenish the stocks.
+      operationId: getReorderPoints
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+        - name: replenish
+          in: query
+          schema:
+            type: boolean
+          description: >
+             A parameter to get list of productSKUs which need stock replenishment, i.e. their stock number is less than threshold.
+      responses:
+        '200':
+          description: List of all reorder points.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  docs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ReorderPoint"
+                  page:
+                    type: integer
+                    minimum: 1
+                    example: 1
+                  pages:
+                    type: integer
+                    minimum: 1
+                    example: 5 
+                    description: Total pages
+    post:
+      summary: Create a Reorder Point.
+      tags:
+        - ReorderPoints
+      operationId: createReorderPoint
+      security: 
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReorderPoint"
+      responses:
+        '201':
+            description: Reorder point successfully created.
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/GenericResponse"
+                example:
+                  status: success
+                  message: "Reorder point successfully created"
+        '400':
+            $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    put:
+      summary: Update a Reorder Point.
+      security: 
+        - bearerAuth: []
+      tags:
+        - ReorderPoints
+      operationId: updateReorderPoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReorderPoint"
+      responses:
+        '200':
+            description: Reorder point successfully updated.
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/GenericResponse"
+                example:
+                  status: "success"
+                  message: "Reorder point successfully updated"
+        '400':
+            $ref: '#/components/responses/ValidationError'
+        '401':
+            $ref: '#/components/responses/UnauthorizedError'
+        '404':
+            $ref: '#/components/responses/404NotFoundError'
+  /:
+    get:
+      operationId: "getEndpoints"
+      summary: "Get all the endpoints available"
+      responses:
+        "200":
+          description: "List of available endpoints"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  endpoints:
+                    type: array
+                    items:
+                      type: string
+                      format: uri
+                    example:
+                      - "/products"
+                      - "/products/{productId}" 
+                      - "/categories"
+                      - "/categories/{categoryId}"
+                  documentationURL:
+                    type: string
+                    format: uri
+                    example: "https://github.com/shashwatsanket997/Product-Management-System"
+  /swagger:
+    get:
+      operationId: getSwaggerSpec
+      summary: Get Swagger spec YAML file
+      responses:
+        "200":
+          description: "Returns yaml file"
+          content:
+            text/yml:
+              schema:
+                type: string
+                format: file
+                  
+components:
+  schemas:
+    Category:
+      type: object
+      properties:
+        categoryId:
+          description: Unique Identifier for category
+          type: string
+          pattern: '^[A-Z]{3}[1-9][0-9]{3}$'
+          example: "INV1201"
+        name: 
+          description: Name of the category
+          type: string
+          example: "Men's Shirts"
+        gstSlabId:
+          description: GST tax category
+          type: string
+          pattern: "^GST[0-9]{2}$"
+          example: "GST01"
+        parentCategory:
+          description: Parent Category Id, leave null for no parent
+          type: string
+          pattern: '^[A-Z]{3}[1-9][0-9]{3}$'
+          nullable: true
+          example: "INV1200"
+        productProps:
+          description: The products of this category, will be enforced to include these properties as their attributes. 
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductProp'
+          example:
+            - key: material
+              values: ["Cotton", "Denim", "Linen", "Rayon" ]
+            - key: size
+              values: ["2XL", "XL", "L","M","S"]
+
+      required: 
+        - categoryId
+        - name
+        - gstSlabId
+          
+    ProductProp:
+      type: object
+      properties:
+        key: 
+          type: string
+          description: product property name
+          example: "material"
+        values:
+          type: array
+          items:
+            type: string
+          example: ["Cotton", "Denim","Linen","Rayon"]
+          description: It represent possible values that a product attribute can have as options, give null for custom values.
+          nullable: true
+    Product:
+      type: object
+      properties:
+        productSKU:
+          type: string
+          description: Stock keeping unit as a unique identifier
+          example: "hewl2221md21"
+        name:
+          type: string
+          description: Product Name
+          example: "Dennis Lingo Men's Casual Shirt"
+        categoryId:
+          type: string
+          description: CategoryId the product belonging to.
+          pattern: '^[A-Z]{3}[1-9][0-9]{3}$'
+          example: "INV1201"
+        keywords:
+          type: array
+          items:
+            type: string
+          description: keywords to facilitate searching
+          example: ["smart casual wear", "Lingo Mens", "modern wears"]
+        brandId:
+          type: string
+          description: The company manufacturing the product
+          example: "BR101"
+          pattern: "^[A-Z]{2}[0-9]{3}"
+        price:
+          type: number
+          description: Base price of the product
+          example: 599
+          minimum: 0
+        imageURIs:
+          type: array
+          description: Product Image urls
+          items:
+            type: string
+            format: uri
+        stock:
+          type: integer
+          description: Total quantity in the inventory
+          example: 25 
+          minimum: 0
+        availability:
+          description: Availability of the sale
+          type: string
+          example: online
+          enum:
+            - online
+            - offline
+            - both
+        ratings:
+          type: number
+          minimum: 0
+          example: 4.5
+        suppliers:
+          type: array
+          description: List of supplierIds for the product
+          items:
+            type: string 
+            pattern: "^[A-z]{2}[0-9]{3}"
+          example: ["SP101","SP102","SP103"]
+        prop1:
+          type: string
+          description: This is ``category-specific``(productProps) property like ``material``.
+          example: "Cotton"
+        prop2:
+          type: string
+          description: This is``category-specific``(productProps) property like ``standardSize``.
+          example: "XL"
+        lastUpdated:
+          type: string
+          format: date-time
+          example: "2019-03-12T09:12:28Z"
+      required: 
+        - productSKU
+        - name
+        - categoryId
+        - availability
+        - brandId
+        - price
+        - stock
+        - suppliers
+      
+    Brand:
+      type: object
+      properties:
+        brandId: 
+          type: string
+          pattern: "^[A-Z]{2}[0-9]{3}"
+          example: "BR101"
+        name: 
+          type: string
+          description: Name of the company
+          example: "Dennis Lingo"
+        website:
+          type: string
+          format: uri 
+        email:
+          type: string
+          format: email
+          example: "info@dennisLingo.com"
+      required:
+        - brandId
+        - name
+        - email 
+        
+    Supplier:
+      type: object
+      properties:
+        supplierId:
+          type: string
+          pattern: "^[A-Z]{2}[0-9]{3}$"
+          example: "SP101"
+        name:
+          type: string
+          example: "Express shippings"
+        address:
+          type: string
+          example: "Sector-1A, Chennai"
+        email:
+          type: string
+          format: email
+          example: "abc@xyz.com"
+      required:
+        - supplierId
+        - name
+        - address
+        - email
+    GSTSlab:
+      type: object
+      properties:
+        gstSlabId: 
+          type: string
+          pattern: "^GST[0-9]{2}$" 
+          example: "GST01"
+        name:
+          type: string
+          description: Slab name
+          example: "clothing"
+        rate:
+          type: number
+          description: Rate in percentage.
+          minimum: 0
+          maximum: 50 
+          example: 5
+      required:
+        - gstSlabId
+        - name 
+        - rate
+    Offer:
+      type: object
+      properties:
+        productSKU:
+          type: string
+          description: "the offer for the product"
+          example: "hewl2221md21"
+        discountRate:
+          type: number
+          description: Rate in percentage.
+          minimum: 0
+          maximum: 100
+          example: 35
+        name: 
+          type: string
+          description: "Name of the sale"
+          example: "Summer Sale"
+        expiry:
+          type: string
+          format: date
+          example: "2020-07-01"
+      required:
+        - productSKU
+        - discountRate
+        - name
+        - expiry
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "2342-2345-1201"
+          pattern: '^\d{4}-\d{4}-\d{4}$'
+        date:
+          type: string
+          format: date
+          example: "now"
+        buyerName:
+          type: string
+          description: "Name of the buyer for whom the invoice is issued"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PriceBreakDown"
+        total:
+          type: number
+          description: Total payable amount
+          example: 409
+      required:
+        - id
+        - date
+        - buyerName
+    PriceBreakDown:
+      type: object
+      properties:
+        productSKU: 
+          type: string
+          example: "hewl2221md21"
+        quantity:
+          type: integer
+          minimum: 1
+          example: 1 
+        basePrice:
+          description: Base price of the product
+          type: number
+          example: 599
+        discount:
+          description: Discount rate applied on the product in %
+          type: number
+          example: 35
+        sellingPrice:
+          description: Price of the product, after applying the discount
+          type: number
+          example: 389.35
+        taxRate:
+          description: Tax rate applied on the product in %
+          type: number
+          example: 5
+        price:
+          description: Final price of the product
+          type: number
+          example: 408.81
+    ReorderPoint:
+      type: object
+      properties:
+        productSKU:
+          type: string
+          example: "hewl2221md21"
+        minStockQty:
+          type: integer
+          minimum: 5
+          example: 5
+    User:
+      type: object
+      properties:
+        id: 
+          type: string
+          description: Unique identifier generated by the backend service.
+          format: uuid
+        name:
+          type: string
+          example: Shashwat
+        username:
+          type: string
+          format: email
+          example: shashwat@abc.com
+        password:
+          type: string
+        userType:
+          type: string
+          enum:
+            - manager
+            - admin
+      required:
+        - name
+        - username
+        - password
+        - userType
+    
+    PatchOps:  ## Schema for performing Patch Operations
+      type: object
+      properties:
+        $op:
+          description: The operation to be performed
+          type: string
+          enum: 
+            - add
+            - remove
+            - update
+        path:
+          description: The path of the attribute, which will be the operand
+          type: string
+        value:
+          anyOf:
+            - type: array
+              items:
+                  type: string
+            - type: string
+            - type: number
+            
+    ProductFilter:
+      type: object
+      properties:
+        keywords:
+          description: Search products by keywords.
+          type: array
+          items: 
+            type: string
+          example:
+            - "modern wears"
+            - "smart casual wear"
+        priceRange:
+          description: Search products by price range. 
+          type: object
+          properties:
+            low:
+              type: number
+              example: 300
+            high:
+              type: number
+              example: 600
+        availability:
+          description: Search by product availability
+          type: string
+          enum:
+            - online
+            - offline
+            - both
+        prop1:
+          description: Search by product specific or category specific properties. Example prop1 as material for Men's shirt category products. Value can be array or single-valued.
+          type: array
+          items:
+            type: string
+          example:
+            - "Cotton"
+            - "Denim"
+        arrival:
+          description: Search products by its arrival date. Example fresh arrival products.
+          type: object
+          properties:
+            priorDate:
+              type: string
+              format: date-time
+              example: "2019-03-12T09:12:28Z"
+            laterDate:
+              type: string
+              format: date-time 
+              example: "2019-03-14T09:12:28Z"
+    
+    GenericError:
+      type: object
+      properties:
+        errorType:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+  
+    GenericResponse:
+      type: object 
+      properties:
+        status: 
+          type: string
+        message:
+          type: string
+    GenericResponseWithLinks:
+      allOf:
+        - $ref: "#/components/schemas/GenericResponse"
+        - type: object
+          properties:
+            href:
+              type: string
+              format: uri
+  securitySchemes: # This contains security declaration
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
+  responses: # This contains all the responses declaration
+    UnauthorizedError:
+      description: Unauthorized. Access token is missing or invalid or not a valid permission.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error: 
+                type: string
+                example: "Access token missing or invalid "
+    ValidationError:
+      description: Validation error. Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenericError'
+          example:
+            errorType: "Validation Error"
+            errors: ["Error message"]
+    
+    404NotFoundError:
+      description: The specified resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenericError'
+          example:
+            errorType: "404 Not Found"
+            errors: ["Object Id not found"]
+    
+    AuthToken:
+      description: Authentication Successfull.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              token: 
+                type: string
+                format: jwt
+          example:
+            token: "eyJhbGciOiJIUzI1NiIsInR5CI6IkpXVeyJ1c2VybmFtZSI6InJvb3QxMDExMTIiLCJuYW1lIjoic2hhc2h3YXQxIiwidXNlclR5cGUiOiJTdHVkZW50IiwiX2lkIjoiNWU1Nzg1YTk3YzU0N2QzODE4ODRlNmJiIiwiaWF0IjoxNTgyNzk4MDQyLCJleHAiOjE1ODI4MDUyNDJ9._NUZC5K4tqzgmCiVcEcR0xeKDzX8mEKOwPq-7KBsZvM"
+            
+    UserDetails:
+      description: User details (excluding password)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id: 
+                type: string
+                format: uuid
+                example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+              name:
+                type: string
+                example: Shashwat
+              username:
+                type: string
+                format: email
+                example: shashwat@abc.com
+              userType:
+                type: string
+                enum:
+                  - manager
+                  - admin
+    
+  requestBodies:
+    CreateInvoice:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                buyerName:
+                  type: string
+                  example: "Sanket"
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      productSKU:
+                        type: string
+                      qty:
+                        type: integer
+                        minimum: 1
+                  example:  
+                    - productSKU: "hewl2221md21"
+                      qty: 3
+                    - productSKU: "ueodd2654ncr"
+                      qty: 2
+                      
+    UserRegister:
+      required: true
+      content: 
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "Silber"
+              username:
+                type: string
+                format: email
+                example: "silber@xyz.com"
+              password:
+                type: string
+                example: "asdf@1007"
+  examples:
+    ## Categories Examples
+    withSubCategories:
+      value:
+        id: "INV1200"
+        name: "Men's Fashion"
+        gstSlabId: "GST01"
+        parentCategory: null
+        productProps: []
+        subCategories: [{
+          "id": "INV1201",
+          "name": "Men's Shirts",
+        },{
+          "id": "INV1202",
+          "name": "Men's Shoes" 
+        },{
+          "id": "INV1203",
+          "name": "Men's Pants"
+        }]
+    
+    withoutSubCategories:
+      value:
+        id: "INV1200"
+        name: "Men's Fashion"
+        gstSlabId : "GST01"
+        parentCategory: null
+        productProps: []
+  
+    MensFashion:
+      summary: Men's Fashion
+      value:
+        id: "INV1200"
+        name: "Men's Fashion"
+        gstSlabId: "GST01"
+        parentCategory: null
+        productProps: []
+    MensShirts:
+      summary: Men's Shirts
+      value:
+        id: "INV1201"
+        name: "Men's Shirt"
+        gstSlabId: "GST01"
+        parentCategory: "INV1200"
+        productProps: [{
+          "key": "material",
+          "values": ["Cotton", "Denim", "Linen", "Rayon" ]
+        },{
+          "key": "standardSize",
+          "values": ["2XL","XL","L","M","S"]
+        }]
+    MensShoe:
+      summary: "Men's Shoe"
+      value:
+        id: "INV1202"
+        name: "Men's Shoe"
+        gstSlabId: "GST01"
+        parentCategory: "INV1200"
+        productProps: [{
+          "key": "material",
+          "values": ["Canvas", "Leather", "Rubber"] ## Options
+        },{
+          "key": "type",
+          "values": ["Sports","Formal","Casual"] ## Options
+        },{
+          "key": "size",
+          "values": ["3","4","5","6","10"] ## Options
+        }]
+    Computers:
+      summary: "Computers & Accessories"
+      value:
+        id: "INV1010"
+        name: "Computers And Accessories"
+        gstSlabId: "GST02"
+        parentCategory: null
+        productProps: [{
+          "key": "Specifications",
+          "values": null ## Allowing Custom Values
+        }]
+    Laptops:
+      value:
+        id: "INV1011"
+        name: "Laptops"
+        gstSlabId: "GST02"
+        parentCategory:  "INV1010"
+        productProps: [{
+          "key": "CPUType",
+          "values": ["Intel Core i5","Intel Core i7","Intel Core i3","AMD E-Series"]
+        },{
+          "key": "memorySize",
+          "values": ["Up to 2GB","4GB","6GB"]
+        }] ## Similarly Other props can be added
+    
+    ## Product examples
+    DennisLingo:
+      summary: "Dennis Lingo under Men's shirts"
+      value:
+        productSKU: "hewl2221md21"
+        name: "Dennis Lingo"
+        categoryId: "INV1201"
+        keywords: ["smart casual wear","Lingo Mens","modern wears"]
+        brandId: "BR101"
+        price: 599
+        imageURIs: ["/images/hewl2221md21_img1.png", "/images/hewl2221md21_img2.png"]
+        stock: 20
+        availability: "online"
+        ratings: 4.5
+        suppliers: ["SP101","SP102","SP103"]
+        material: "cotton"
+        size: "XL"
+        lastUpdated: "2019-03-12T09:12:28Z"
+    
+    HP14 :
+      summary: "HP14 under Laptops"
+      value:
+        productSKU: "compl00142pp12"
+        name: "HP 14 Core i5 8th Gen 14-inch Thin and Light Laptop"
+        categoryId: "INV1011"
+        keywords: ["8th Gen","modern laptop","HP best"]
+        brandId: "BR107"
+        price: 41869
+        imageURIs: ["/images/compl00142pp12_img1.png", "/images/compl00142pp12_img2.png"]
+        stock: 5
+        availability: "both"
+        ratings: 4.1
+        suppliers: ["SP201","SP202","SP203"]
+        Specifications: [
+          "Processor: 8th Generation Intel Core i5-8265U processor, 6 MB cache, 4 cores",
+          "OS: Pre-loaded Windows 10 Home",
+          "Display: 14-inch HD (1366x768) display"
+          ] ## Property from parentCategory(Computers and Accessories)
+        CPUType: "Inter Core i5" ## Property from category (Laptops)
+        memorySize: "6GB" ## Property from  category(Laptops) 
+        lastUpdated: "2019-03-12T09:12:28Z"
+    
+    
+    ## Patch Operations examples 
+    AddValueToProductProps:
+      summary: Add value to productProps->material
+      value:
+        [{
+          "$op": "add",
+          "path": "productProps/material",
+          "value": "silk"
+        }]
+    AddValuesToProductProps:
+      summary: Add multiple values tp productProps->material
+      value:
+        [{
+          "$op": "add",
+          "path": "productProps/material",
+          "value": ["Silk","Khadi"]
+        }]
+    RemoveValueToProductProps:
+      summary: Remove value from productProps->material
+      value:
+        [{
+          "$op": "remove",
+          "path": "productProps/material",
+          "value": "Cotton"
+        }]
+    RemoveValuesToProductProps:
+      summary: Remove multiple values from productProps->material
+      value:
+        [{
+          "$op": "remove",
+          "path": "productProps/material",
+          "value": ["Cotton","Rayon"]
+        }]
+    UpdateAttributes:
+      summary: Update attributes(Except id)
+      value:
+        [{
+          "$op": "update",
+          "path": "gstSlabId",
+          "value": "GST03"
+        }]
+    ## For products
+    AddRemoveValue:
+      summary: Add or remove value to keywords
+      value:
+        [{
+          "$op": "add",
+          "path": "keyword",
+          "value" : "new value"
+        },{
+          "$op": "remove",
+          "path": "keyword",
+          "value": "old value"
+        }]
+    AddRemoveValues:
+      summary:  Add or Remove muliple values to keywords
+      value:
+        [{
+          "$op": "add",
+          "path": "keyword",
+          "value": ["new value1","new value2"]
+        },{
+          "$op": "remove",
+          "path": "keyword",
+          "value": ["old value1","old value2"]
+        }]
+    UpdateAnAttribute:
+      summary: Update an attribute
+      value: 
+        [{
+          "$op": "update",
+          "path": "price",
+          "value": 699
+        }]
+    UpdatePassword:
+      summary: Update password
+      value:
+        [{
+          "$op": "update",
+          "path": "password",
+          "value": "new-password"
+        }]
+    UpdateName:
+      summary: Update name
+      value:
+        [{
+          "$op": "update",
+          "path": "name",
+          "value": "new-name"
+        }]
+    UpdateUserType:
+      summary: Upgrade the User permission scope.
+      value:
+        [{
+          "$op": "update",
+          "path": "userType",
+          "value": "admin"
+        }]
+        
+  parameters:
+    pageParam:
+      in: query
+      name: page
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: Page No to get particular page. 
+    limitParam:
+      in: query
+      name: limit
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 20
+      description: The numbers of items per page to return.
+      
+    keywordFilter:
+      description: Filter products using keywords
+      in: query
+      name: keywords
+      schema:
+        type: array
+        items:
+          type: string
+        example:
+          - "modern wears"
+          - "smart casual wear"
+      style: form
+      explode: false
+      allowEmptyValue: true
+    
+    SpecificFilter:
+      description: "Product specific or category specific property as filter (here for example ``prop1`` can be ``material`` for Men's Shirts category"
+      in: query
+      name: prop1
+      schema:
+        type: array
+        items:
+          type: string
+        example:
+          - "Cotton"
+          - "Denim"
+      style: form
+      explode: false
+      allowEmptyValue: true
+      
+    ComplexProductFilterParam:
+      description: More complex filter can be formed by grouping multiple properties like ``priceRange``, ``arrival`` date, product specific or category specific properties. Refer usecase.(Here ``prop1`` is category-specific property, example material in case of Men's shirt category). For more options in filter refer [Product Filters](https://github.com/shashwatsanket997/Product-Management-System#product-filters).
+      in: query
+      name: filter
+      content:
+        application/json: ## Wrapping the Queries in object
+          schema:
+            $ref: "#/components/schemas/ProductFilter"
+      allowEmptyValue: true
+    CategoryId:
+      in: path
+      name: categoryId
+      required: true
+      schema:
+        type: string
+        pattern: '^[A-Z]{3}[1-9][0-9]{3}$'
+    
+    ProductSKU:
+      in: path
+      name: productSKU
+      required: true
+      schema:
+        type: string
+        
+    SupplierId:
+      in: path
+      name: supplierId
+      required: true
+      schema:
+        type: string
+        pattern: '^[A-Z]{2}[0-9]{3}$'
+    BrandId:
+      in: path
+      name: brandId
+      required: true
+      schema:
+        type: string
+        pattern: '^[A-Z]{2}[0-9]{3}$'
+    GSTSlabId:
+      in: path
+      name: gstslabId
+      required: true
+      schema:
+        type: string
+        pattern: '^GST[0-9]{2}$'
+    Username:
+      in: path
+      name: username
+      required: true
+      schema:
+        type: string
+    InvoiceId:
+      in: path
+      name: invoiceId
+      required: true
+      schema:
+        type: string
+        pattern: '^\d{4}-\d{4}-\d{4}$'
