@@ -79,7 +79,7 @@ The resources for the system are:
   - [Products](#products)
   - [Brands](#brands)
   - [Suppliers](#suppliers)
-  - [ReorderPoints](#reorder-points)
+  - [ReorderPoints](#reorderpoints)
   - [Invoices](#invoices)
   - [Offers](#offers)
   - [GSTSlabs](#gstslabs)
@@ -160,7 +160,7 @@ The resources for the system are:
   | taxrate | `number` <br/> minimum 0 | Tax Rate as per the GST slab of product category|
   | price | `number` <br/> minimum 0 | Final price of the product |
   
-### Invoice
+### Invoices
   **Description**: A bill statement describing price break down of each product. <br/>
   **Schema**: ``*``:required
   |Attribute| type | Description |
