@@ -4,7 +4,7 @@ GlobInv is a product management system which manages different categories of pro
 ## Overview 
 
 - [Solution Framing](#solution-framing)
-- [Features](#features)
+- [System Features](#system-features)
 - [Resources](#resources)
 - [Endpoints](#endpoints)
 - [Quick Start](#quick-start)
@@ -29,13 +29,15 @@ category = {
  ```javascript
 category = {
   ...otherProps
-   productProps: [ { key: prop1 , 
+   productProps: [ { 
+                    key: prop1 , 
                     values: [...listOfPreDefinedValues] 
-                   }, { key: prop2 , 
+                   },{ 
+                    key: prop2 , 
                     values: [...listOfPreDefinedValues] 
                    },{
-                   key: prop3
-                   values: null //Allowing Custom value
+                    key: prop3
+                    values: null //Allowing Custom value
                    }
                  ]
     }
@@ -46,15 +48,49 @@ category = {
 category = {
   ...otherProps
    parentCategoryId: categoryId // null in case of parent category
-   productProps: [ { key: prop1 , 
+   productProps: [ { 
+                    key: prop1, 
                     values: [...listOfPreDefinedValues] 
-                   }, { key: prop2 , 
+                   },{ 
+                    key: prop2, 
                     values: [...listOfPreDefinedValues] 
                    },{
-                   key: prop3
-                   values: null //Allowing Custom value
-                   }
-                 ]
+                    key: prop3
+                    values: null //Allowing Custom value
+                   }]
     }
 ```
+## System Features
++  A system that can manage ``Different`` types of products. 
++ ``Hierarchical`` based categorical grouping.
++ ``Category-filter`` to ease the search of products.
++  Managing different ``Brands``.
++  Managing different ``Suppliers``.
++  Tracking Products through ``Reorder Points `` and generating pre-order notification for out-of-stocks products.
++  Complete ``Billing`` facility, Invoice generation with detailed ``Price Break Down`` [Discounts, tax(GST)].
++  Managing ``Offers`` of different products.
++  Managing different Tax slabs as ``GST taxation`` of  ``India``.
+
+**Note** : here managing means ``CRUD`` operations, filtering via ``Query paramaeters`` in context to API documentation.
+
+## Resources
+The resources for the systems are: 
+  - [Categories](#categories)
+  - [Products](#products)
+  - [Brands](#brands)
+  - [Suppliers](#suppliers)
+  - [ReorderPoints](#reorder-points)
+  - [Invoices](#invoices)
+  - [Offers](#offers)
+  - [GSTSlabs](#gstSlabs)
+  - [Auth](#auth)
+  - [Users](#users)
+  - [Images](#images)
+
+### Descriptions
+### Categories
+  
+
+
+
  
