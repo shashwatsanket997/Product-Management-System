@@ -7,9 +7,10 @@ GlobInv is a product management system which manages different categories of pro
 - [Quick Start(OpenAPI Specs)](#quick-start)
 - [Resources](#resources)
 - [Client SDK](#client-sdk)
+- [Example Schemas](#example-schemas)
 
 ## Solution Framing
-### The Problems
+### The Problems a must read:
   1. `Problem 1`: **How can we manage different categories of product?**<br/>
     `Scenario`: Suppose we have two categories as ``Men's Shirts `` and ``Men's Shoes``, any product under these categories will have some properties say ``material``, ``size``, ``type``, ``color``, etc. Moreover, these properties will vary with category say for example in Men's Shirts category will have material like Cotton, Denim, Silk, etc. whereas in the case of Men's Shoes will have material as Canvas, Leather, Rubber, etc. Similarly, other properties will vary with the category.
   2. `Problem 2` : **Managing consistency among the products**<br/>
@@ -40,12 +41,12 @@ category = {
                  ]
     }
 ```
- 3. `Solution Iteration-3`: Using `Hierarchical approach` allowing a category to have multiple child categories. Incorporating this in the category schema as ``parentCategoryId``. For parent category ``parentCategoryId`` is ``null``.
+ 3. `Solution Iteration-3`: Using `Hierarchical approach` allowing a category to have multiple child categories. Incorporating this in the category schema as ``parentCategory``. For parent category ``parentCategory`` is ``null``.
  
   ```javascript
 category = {
   ...otherProps
-   parentCategoryId: categoryId // null in case of parent category
+   parentCategory: categoryId // null in case of parent category
    productProps: [ { 
                     key: prop1, 
                     values: [...listOfPreDefinedValues] 
@@ -60,7 +61,7 @@ category = {
 ```
 ## System Features
 
-**Note** : here managing means ``CRUD`` operations, filtering via ``Query paramaeters`` in context to API documentation.
+**Note** : Here managing means ``CRUD`` operations, filtering via ``Query paramaeters`` in context to Rest API documentation.
 
 +  A system that can manage ``Different`` types of products. 
 + ``Hierarchical`` based categorical grouping.
@@ -70,7 +71,7 @@ category = {
 +  Tracking Products through ``Reorder Points `` and generating pre-order notification for out-of-stocks products.
 +  Complete ``Billing`` facility, Invoice generation with detailed ``Price Break Down`` [Discounts, tax(GST)].
 +  Managing ``Offers`` of different products.
-+  Managing different Tax slabs as ``GST taxation`` of  ``India``.
++  Managing different Tax slabs as per ``GST taxation`` of  ``India``.
 
 ## Quick Start
 ### OpenAPI Swagger Specification: [click here](https://app.swaggerhub.com/apis-docs/S3649/Product-Management-System/1.0.0)
@@ -213,11 +214,74 @@ The resources for the system are:
   |---------|------| ----------- |
   | images  | ``array`` <br/> Items: `BLOB($jpeg,$png) ` | Array of images|
  
- 
- 
+ ----
+## Client SDK 
+  For detailed description of ``endpoints `` refer Open-API swagger [documentation](https://app.swaggerhub.com/apis-docs/S3649/Product-Management-System/1.0.0)
 
+### Content in context to GlobInv
+- [Authentication](#authentication)
+- [HTTP verbs](#http-verbs)
+- [Permissions](#permissions)
+- [Generic Success Response](#generic-success-response) 
+- [Generic Error Response](#generic-error-response)
+- [Filters](#filters) 
+- [Pagination](#pagination)
+- [Caching](#caching)
+- [Cross origin resource sharing](#cross-origin-resource-sharing)
+
+### Authentication
+In ``GlobInv`` the authetication scheme used is ``Bearer authentication`` also called as **token authentication**. It involves security tokens called bearer tokens. The name **Bearer authentication** can be understood as *give access to the bearer of this token.* The bearer token is a cryptic string, usually ``JWT``(JSON web tokens) . The client must send this token in the Authorization header when making requests to protected resources.
+
+```Bash
+    Authorization: Bearer <token>
+```
+Sending token in ``header``:
+
+```bash
+  curl -H "Authorization: Bearer <token> "  BASE_URL
+```
+In `GlobInv` there are two types of user as ``manager`` and ``admin``.  The admin can `create` users as `manager`. In order to get `Auth token` one need to make `POST` request on `/auth` endpoint with username and password as credential.
+
+**Token Request**
+```bash
+  curl -d '{"username":"USERNAME", "password":"PASSWORD"}' -H "Content-Type: application/json" -X POST BASE_URL/auth
+```
+**Responses**: 
+1. Success `Status Code`: **200**, `Content` : **application/json**
+```javascript
+  {
+"token":"eyJhbGciOiJIUzI1NiIsInR5CI6IkpXVeyJ1c2VybmFtZSI6InJvb3QxMDExMTIiLCJuYW1lIjoic2hhc2h3YXQxIiwidXNlclR5cGUiOiJTdHVkZW50IiwiX2lkIjoiNWU1Nzg1YTk3YzU0N2QzODE4ODRlNmJiIiwiaWF0IjoxNTgyNzk4MDQyLCJleHAiOjE1ODI4MDUyNDJ9._NUZC5K4tqzgmCiVcEcR0xeKDzX8mEKOwPq-7KBsZvM"
+  }
+```
+2. Authentication Faliure  `Status Code`: **401**,  `Content` : **application/json**
+```javascript
+{
+  "status": {
+    "errorType": "Invalid Credentials",
+    "errors": [
+      "username or password invalid"
+    ]
+  }
+```
+
+### HTTP Verbs
+Where possible, ``GlobInv`` API  strives to use appropriate HTTP verbs for each action.
+
+| Verb | Description |
+|-------|------------|
+| `GET` | Used for retrieving resources. |
+| `POST` | Used for creating resources. |
+| `PATCH` | Used for updating resources with partial JSON data. For instance, a product resource has name, price to update. A PATCH request may accept one or more of the attributes to update the resource. |
+| `PUT` | Used for replacing resources or collections.|
+| `DELETE`| Used for deleting resources.|
+
+
+
+
+
+ 
+ 
   
-
  
   
    
