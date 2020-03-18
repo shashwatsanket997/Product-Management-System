@@ -77,20 +77,20 @@ category = {
 
 ## Resources
 The resources for the system are: 
-  - [Categories](#categories)
-  - [Products](#products)
-  - [Brands](#brands)
-  - [Suppliers](#suppliers)
-  - [ReorderPoints](#reorderpoints)
-  - [Invoices](#invoices)
-  - [Offers](#offers)
-  - [GSTSlabs](#gstslabs)
-  - [Users](#users)
-  - [Images](#images)
+  - [Category](#categories)
+  - [Product](#products)
+  - [Brand](#brands)
+  - [Supplier](#suppliers)
+  - [ReorderPoint](#reorderpoints)
+  - [Invoice](#invoices)
+  - [Offer](#offers)
+  - [GSTSlab](#gstslabs)
+  - [User](#users)
+  - [Image](#images)
 
 ### Descriptions
-### Categories
-  **Description**: A way of grouping similar products. <br/>
+### Categories 
+  **Description**: *(Singular: Category)* A way of grouping similar products. <br/>
   **Schema**:         `*`: required
    |Attribute| type | Description |
    |---------|------| ----------- |
@@ -100,10 +100,8 @@ The resources for the system are:
    | parentCategory* | ``string``<br/> ``pattern``: *'^[A-Z]{3}[1-9][0-9]{3}$*'<br/> `nullable`: ``true`` | #id of parent category (Hierarchical grouping). Refer [Solution Framing](#solution-framing)|
    | productProps | ``array`` <br/> items: type: ``object `` <br/> ``{ key: 'prop1', values: [...listOfPreDefinedValues ] }`` |  It represent ``category-specific`` property which helps in managing different type of products. Refer [Solution Framing](#solution-framing) |
    
-**Note**: Check [Examples]() for example schemas. 
-   
  ### Products
-  **Description**: items in the system. <br/>
+  **Description**: *(Singular: Product)*  items in the system. <br/>
   **Schema**:   `*`:required
    |Attribute| type | Description |
    |---------|------| ----------- |
@@ -123,10 +121,8 @@ The resources for the system are:
    | additionalProp1 | `string` | A ``product-specific`` property.|
    | additionalProp2 | `string` | A ``product-specific`` property.|
   
-  **Note**: Check [Examples]() for example schemas. 
-    
   ### Brands
-  **Description**: Companies manufacturing products. <br/>
+  **Description**: *(Singular: Brand)* Companies manufacturing products. <br/>
   **Schema**:   `*`:required
  |Attribute| type | Description |
  |---------|------| ----------- |
@@ -136,7 +132,7 @@ The resources for the system are:
  | email* | ``string($email)`` | Support email from the company. |
 
  ### Suppliers
-  **Description**: Vendors supplying the products. <br/>
+  **Description**: *(Singular: Supplier)* Vendors supplying the products. <br/>
   **Schema**:   `*`:required
  |Attribute| type | Description |
  |---------|------| ----------- |
@@ -146,7 +142,7 @@ The resources for the system are:
  | email* | ``string($email)`` | Support email from the supplier. |
  
 ### ReorderPoints
-  **Description**: It is a minimum quantity of an item which a firm holds in stock. Used for pre-notifications to replenish the stocks <br/>
+  **Description**: *(Singular: ReorderPoint )* It is a minimum quantity of an item which a firm holds in stock. Used for pre-notifications to replenish the stocks <br/>
   **Schema**:   `*`:required
   |Attribute| type | Description |
   |---------|------| ----------- |
@@ -167,7 +163,7 @@ The resources for the system are:
   | price | `number` <br/> minimum 0 | Final price of the product |
   
 ### Invoices
-  **Description**: A bill statement describing price break down of each product. <br/>
+  **Description**: *(Singular: Invoice)* A bill statement describing price break down of each product. <br/>
   **Schema**: ``*``:required
   |Attribute| type | Description |
   |---------|------| ----------- |
@@ -178,7 +174,7 @@ The resources for the system are:
   | total* | `number` <br/> minimum: 0 |  Total amout payable |
   
 ### Offers
-  **Description**: An offer for a product <br/>
+  **Description**: *(Singular: Offer)* An offer for a product <br/>
   **Schema**: ``*``: required
   |Attribute| type | Description |
   |---------|------| ----------- |
@@ -187,7 +183,7 @@ The resources for the system are:
   | name* | `string` | Name of offer Example: "Winter Sale" |
   | expiry* | `string($date)` | Expiry date of offer |
 ### GSTSlabs:
-  **Description**: Different Tax Slabs as per `GST India`<br/>
+  **Description**: *(Singular: GSTSlab)* Different Tax Slabs as per `GST India`<br/>
   **Schema**: ``*``: required
   |Attribute| type | Description |
   |---------|------| ----------- |
@@ -196,7 +192,7 @@ The resources for the system are:
   | rate* | `number` <br/> minimum: 0 <br/> maximum: 50 | Rate of discount |
   
  ### Users
-  **Description**: Users using the system. <br/>
+  **Description**: *(Singular: User)* Users using the system. <br/>
   **Schema**: ``*``: required
   |Attribute| type | Description |
   |---------|------| ----------- |
@@ -207,7 +203,7 @@ The resources for the system are:
   | userType* | `string` <br/> `enum : ['admin','manager'] `| UserType of the user
   
  ### Images
-  **Description**: Schema used for uploading multiple images and getting URIs. <br/>
+  **Description**: *(Singular: Image)* Schema used for uploading multiple images and getting URIs. <br/>
   **Schema**: ``*``: required
   |Attribute| type | Description |
   |---------|------| ----------- |
@@ -288,6 +284,16 @@ Status codes in responses from GlobInv API
 |`401`| Unauthorized Error|
 |`404`| Not Found | 
 |`500`| Internal Server Errorr |
+
+#### Patch operation schema
+  **Description**: Schema used for making a  patch request <br/>
+  **Schema**: ``*``: required
+  |Attribute| type | Description |
+  |---------|------| ----------- |
+  | $op  | `string` <br/> ``enum: [add,remove,update]`` | Operations to be performed |
+  | path | `string` | Path of updatation within the resouces. Example: in Category resources, adding value to propductProps/key1 |
+  | value | `string` \|\| `array` | Value to be added, new value in case of update and value to be removed| 
+
 
 ### Permissions
 In GlobInv, The requests which changes or update the state of resource like ``POST``,``PUT``,``PATCH``,``DELETE`` will **seek authorization**.
