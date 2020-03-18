@@ -62,7 +62,7 @@ category = {
 
 **Note** : Here managing means ``CRUD`` operations, filtering via ``Query paramaeters`` in context to Rest API documentation.
 
-+  A system that can manage ``Different`` types of products. 
++  A system that can manage ``Different`` categories of products. 
 + ``Hierarchical`` based categorical grouping.
 + ``Category-filter`` to ease the search of products.
 +  Managing different ``Brands``.
