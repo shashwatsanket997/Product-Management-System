@@ -25,7 +25,7 @@ category = {
    productProps: [...listOfProperties ]
 }
 ```
- 2. `Solution Iteration-2`: From `Problem-2 Consistency Problem`. The solution will be, to pre-define some set of values for each category-specific property and `enforce` the ``products`` under this category to have these ``properties`` as ``attributes`` and the ``value`` of the these attributes will be from the set of pre-defined values(thus acting as options to choose) unless it is ``null``(Allowing Custom Value). More *Intuative* in upcoming example. Incorporating this in the category schema: 
+ 2. `Solution Iteration-2`: From `Problem-2 Consistency Problem`. The solution will be, to pre-define some set of values for each category-specific property and `enforce` the ``products`` under this category to have these ``properties`` as ``attributes`` and the ``value`` of the these attributes will be from the set of pre-defined values(thus acting as options to choose) unless it is ``null``(Allowing Custom Value). More *Intuative* in giving example. Incorporating this in the category schema: 
  ```javascript
 category = {
   ...otherProps
@@ -50,17 +50,17 @@ category = {
    parentCategory: categoryId // null in case of parent category
    productProps: [ { 
       key: prop1, 
-      values: [...listOfPreDefinedValues] [Product->prop1 value will be one from these] 
+      values: [...listOfPreDefinedValues] // [Product->prop1 value will be one from these] 
      },{ 
       key: prop2, 
-      values: [...listOfPreDefinedValues] [Product->prop2 will be one from these]
+      values: [...listOfPreDefinedValues]  //[Product->prop2 will be one from these]
      },{
       key: prop3
       values: null //Allowing Custom value
      }]
     }
 ```
-  Moreover, It leads towards forming a ``new concept``, the concept is similar to OOPs fundamental i.e. `Inheritance` and `Polymorphism(Only Overriding)` but at attribute level. Thus the names can be `Attribute Inheritance and Attribute Overriding`. More *intutative* through given **usecase**: <br/>
+  Moreover, It leads towards forming a ``new concept``, the concept is similar to OOPs fundamental i.e. `Inheritance` and `Polymorphism(Only Overriding)` but at attribute level. Thus the names can be `Attribute Inheritance and Attribute Overriding`. More *intutative* in given **usecase**: <br/>
   
   **Parent Category**: Computers And Accessories <br/>
    ```javascript
