@@ -2128,7 +2128,7 @@ components:
     MensFashion:
       summary: Men's Fashion
       value:
-        id: "INV1200"
+        categoryId: "INV1200"
         name: "Men's Fashion"
         gstSlabId: "GST01"
         parentCategory: null
@@ -2136,7 +2136,7 @@ components:
     MensShirts:
       summary: Men's Shirts
       value:
-        id: "INV1201"
+        categoryId: "INV1201"
         name: "Men's Shirt"
         gstSlabId: "GST01"
         parentCategory: "INV1200"
@@ -2150,7 +2150,7 @@ components:
     MensShoe:
       summary: "Men's Shoe"
       value:
-        id: "INV1202"
+        categoryId: "INV1202"
         name: "Men's Shoe"
         gstSlabId: "GST01"
         parentCategory: "INV1200"
@@ -2167,7 +2167,7 @@ components:
     Computers:
       summary: "Computers & Accessories"
       value:
-        id: "INV1010"
+        categoryId: "INV1010"
         name: "Computers And Accessories"
         gstSlabId: "GST02"
         parentCategory: null
@@ -2177,7 +2177,7 @@ components:
         }]
     Laptops:
       value:
-        id: "INV1011"
+        categoryId: "INV1011"
         name: "Laptops"
         gstSlabId: "GST02"
         parentCategory:  "INV1010"
