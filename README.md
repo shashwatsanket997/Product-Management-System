@@ -1,12 +1,13 @@
 # GlobInv | Product Management System
 GlobInv is a product management system which manages different categories of products along with stock-tracking, filtering and billings. A REST API driven system built on `node js` with `swagger` documentation.
 
+#### OpenAPI Swagger Specification: [click here](https://app.swaggerhub.com/apis-docs/S3649/Product-Management-System/1.0.0)
+
 ## Overview 
 
 - [Solution Framing](#solution-framing)
 - [System Features](#system-features)
 - [Resources](#resources)
-- [Endpoints](#endpoints)
 - [Quick Start](#quick-start)
 - [Client SDK](#client-sdk)
 
@@ -98,6 +99,8 @@ The resources for the system are:
    | parentCategory* | ``string``<br/> ``pattern``: *'^[A-Z]{3}[1-9][0-9]{3}$*'<br/> `nullable`: ``true`` | #id of parent category (Hierarchical grouping). Refer [Solution Framing](#solution-framing)|
    | productProps | ``array`` <br/> items: type: ``object `` <br/> ``{ key: 'prop1', values: [...listOfPreDefinedValues ] }`` |  It represent ``category-specific`` property which helps in managing different type of products. Refer [Solution Framing](#solution-framing) |
    
+**Note**: Check [Examples]() for example schemas. 
+   
  ### Products
   **Description**: items in the system. <br/>
   **Schema**:   `*`:required
@@ -118,7 +121,9 @@ The resources for the system are:
    |lastUpdated* | `date-time`| Date-time when the stock was last updated. |
    | additionalProp1 | `string` | A ``product-specific`` property.|
    | additionalProp2 | `string` | A ``product-specific`` property.|
-   
+  
+  **Note**: Check [Examples]() for example schemas. 
+    
   ### Brands
   **Description**: Companies manufacturing products. <br/>
   **Schema**:   `*`:required
