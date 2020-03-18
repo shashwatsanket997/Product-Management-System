@@ -335,8 +335,8 @@ errors: [ "error message 1", "error message 2" ]
  | Filter Description | Query Type | Endpoint | Usecase |
  | --------------------------------------|-------|-------|-------|
  | keywords|  `array` |``/products?keywords=keyword1,keyword2``| ``/products?keywords=modern%20wears,smart%20casual%20wear``| 
- |category-specific property| `array` |``/product?prop1=value1,value2``|``/products?material=Cotton,Silk``|
- |product-specific property | `string`|``/product?prop1=value1`` | - |
+ |category-specific property| `array` |``/products?prop1=value1,value2``|``/products?material=Cotton,Silk``|
+ |product-specific property | `string`|``/products?prop1=value1`` | - |
    
  Filtering Products by multiple parameters **[Complex Object serialization]** 
   
