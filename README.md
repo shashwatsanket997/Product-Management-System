@@ -500,7 +500,7 @@ The API supports Cross Origin Resource Sharing (CORS) for AJAX requests from any
 curl -i BASE_URL -H "Origin: http://anysite.com/api" -X OPTIONS
 HTTP/1.1 204 No Content
 Access-Control-Allow-Origin: *
-Access-Control-Allow-Headers: Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, X-GitHub-OTP, X-Requested-With
+Access-Control-Allow-Headers: Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, X-Requested-With
 Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE
 Access-Control-Max-Age: 86400
 ```
