@@ -240,11 +240,11 @@ The resources for the system are:
   | userType* | `string` <br/> `enum : ['admin','manager'] `| UserType of the user
   
  ### Images
-  **Description**: *(Singular: Image)* Schema used for uploading multiple images and getting URIs. <br/>
+  **Description**: *(Singular: Image)* Schema used for uploading images and getting public URIs. <br/>
   **Schema**: ``*``: required
   |Attribute| type | Description |
   |---------|------| ----------- |
-  | images  | ``array`` <br/> Items: `BLOB($jpeg,$png) ` | Array of images|
+  | image  | `BLOB($jpeg,$png)` | Image File|
  
  ----
 ## Client SDK 
