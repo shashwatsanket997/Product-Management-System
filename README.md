@@ -18,79 +18,63 @@ GlobInv is a product management system which manages different categories of pro
     `Scenario`: ``Men's shirts`` and ``Men's shoes`` will be sub-category of ``Men's Fashion``.
     
 ### Solution for the above problems: Step-By-Step
-  1. `Solution Iteration-1`: According to `Problem-1` it can inferred that different category will have different properites. Let's call these properties as `Category-specfic` properites. To incorporate these properties we introduce `productProps` under category schema.  Thus schema of category will look like:
+  1. `Solution Iteration-1`: According to `Problem-1` it can inferred that different category will have different properites. Let's call these properties as `Category-specfic` properites. And the ``products`` under this category will have these ``properties`` as ``required `` attributes. To incorporate these properties we introduce `productProps` under category schema. Thus schema of category will look like:
   ```javascript
 category = {
-  ...otherProps
-   productProps: [...listOfProperties ]
+  ...otherProps,
+   productProps: [...listOfProperties ] //["material","standardSize", "color","type"]
 }
 ```
  2. `Solution Iteration-2`: From `Problem-2 Consistency Problem`. The solution will be, to pre-define some set of values for each category-specific property and `enforce` the ``products`` under this category to have these ``properties`` as ``attributes`` and the ``value`` of the these attributes will be from the set of pre-defined values(thus acting as options to choose) unless it is ``null``(Allowing Custom Value). More *Intuative* in giving example. Incorporating this in the category schema: 
  ```javascript
 category = {
-  ...otherProps
- productProps: [{ 
-    key: prop1 , //Property Example: material
-    values: [...listOfPreDefinedValues] // ["Cotton","Denim","Silk"][Product->material will be one from these] 
-   },{ 
-    key: prop2 ,  //Example: standardSize
-    values: [...listOfPreDefinedValues] // ["2XL", "XL", "L", "M","S"][Product->standardSize will be one from these]
-   },{
-    key: prop3  
-    values: null //Allowing Custom value [Product->prop3 can have any value]
-   }
- ]
+  ...otherProps,
+ productProps: {
+  prop1: [...listOfPreDefinedValues],// material: ["Cotton","Denim","Silk"][Product.material will be one from these] 
+  prop2: [...listOfPreDefinedValues],// standardSize: ["2XL", "XL", "L", "M","S"][Product.standardSize will be one from these]
+  prop3: null //Allow custom values [Product.prop3 can be any value]
+  }
 }
 ```
  3. `Solution Iteration-3`: Using `Hierarchical approach` allowing a category to have multiple child categories. Incorporating this in the category schema as ``parentCategory``. For parent category ``parentCategory`` is ``null``.
  
   ```javascript
 category = {
-  ...otherProps
-   parentCategory: categoryId // null in case of parent category
-   productProps: [ { 
-      key: prop1, 
-      values: [...listOfPreDefinedValues] // [Product->prop1 value will be one from these] 
-     },{ 
-      key: prop2, 
-      values: [...listOfPreDefinedValues]  //[Product->prop2 will be one from these]
-     },{
-      key: prop3
-      values: null //Allowing Custom value
-     }]
-    }
+  ...otherProps,
+  parentCategory: categoryId, // null in case of parent category
+  productProps: {
+    prop1: [...listOfPreDefinedValues],// material: ["Cotton","Denim","Silk"][Product.material will be one from these] 
+    prop2: [...listOfPreDefinedValues],// standardSize: ["2XL", "XL", "L", "M","S"][Product.standardSize will be one from these]
+    prop3: null //Allow custom values [Product.prop3 can be any value]
+    }    
+ }
 ```
   Moreover, It leads towards forming a ``new concept``, the concept is similar to OOPs fundamental i.e. `Inheritance` and `Polymorphism(Only Overriding)` but at attribute level. Thus the names can be `Attribute Inheritance and Attribute Overriding`. More *intutative* in given **usecase**: <br/>
   
   **Parent Category**: Computers And Accessories <br/>
    ```javascript
    {
-   "categoryId": "INV1010",
+  "categoryId": "INV1010",
   "name": "Computers And Accessories",
   "gstSlabId": "GST02",
   "parentCategory": null,
-  "productProps": [
-    {
-      "key": "Specifications",
-      "values": null  // Allowing custom values [Product->Specifications can have any value]
-    }
-  ]} 
+  "productProps":{ 
+    "specifications": null // Allowing custom values [Product->Specifications can have any value]
+    } 
+  }
    ```
    **Child Category**: Laptops
    ```javascript
-   {
+  {
   "categoryId": "INV1011",
   "name": "Laptops",
   "gstSlabId": "GST02",
   "parentCategory": "INV1010", //Computers And Accessories
-  "productProps": [{
-      "key": "CPUType",
-      "values": ["Intel Core i5","Intel Core i7","Intel Core i3", "AMD E-Series"]
-      },{
-      "key": "memorySize",
-      "values": ["Up to 2GB","4GB","6GB"]
-   }]
-}
+  "productProps": {
+     "CPUType" : ["Intel Core i5","Intel Core i7","Intel Core i3", "AMD E-Series"]
+     "memorySize": ["Up to 2GB","4GB","6GB"]
+   }
+  }
    ```
   **Product**: HP 14 **[Under Laptops Category]**
   ```javascript
@@ -98,7 +82,7 @@ category = {
   "productSKU": "compl00142pp12",
   "name": "HP 14 Core i5 8th Gen 14-inch Thin and Light Laptop",
   "categoryId": "INV1011", //Under Laptops Category
-  ...otherProps  
+  ...otherProps,  
   "Specifications": [  // This is category specific property [Computers And Accessories]
     "Processor: 8th Generation Intel Core i5-8265U processor, 6 MB cache, 4 cores",
     "OS: Pre-loaded Windows 10 Home",
