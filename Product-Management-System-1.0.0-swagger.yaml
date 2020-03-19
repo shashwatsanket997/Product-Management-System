@@ -956,31 +956,26 @@ paths:
         - bearerAuth: []
       requestBody:
         content:
-          multipart/form-data:
+          image/png:
             schema:
-              type: object
-              properties:
-                files:
-                  type: array
-                  items:
-                    type: string
-                    format: binary
+              type: string
+              format: binary
+          image/jpeg:
+            schema:
+              type: string
+              format: binary
       responses:
         "200":
-          description: "Successfully uploded the files"
+          description: "Successfully uploded the file"
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  fileURIs:
-                    type: array
-                    items:
-                      type: string
-                      format: uri
-                    example:
-                      - "/images/img102231.png"
-                      - "/images/img1025321.png"
+                  fileURI: 
+                    type: string
+                    format: uri
+                    example: "/images/img102231.png"
                 
         "400":
           description: "Validation Error (Bad Request). Possible validation error can be ``File Size Limit``, ``Invalid File Format`` etc."
@@ -990,37 +985,10 @@ paths:
                 $ref: "#/components/schemas/GenericError"
               example:
                 errorType: "Validation Error"
-                errors: ["File img1.png size is greater that 10MB",
-                "File img1.txt is not a valide image."]
+                errors: ["File img1.png size is greater that 10MB"]
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-  /images/{filename}:
-    get:
-      operationId: getImage
-      tags:
-        - Images
-      summary: Returns an image
-      parameters:
-        - in: path
-          name: filename
-          schema:
-            type: string
-          required: true
-      responses:
-        "200":
-          description: An image file.
-          content:
-            image/png:
-              schema:
-                type: string
-                format: binary
-            image/jpeg:
-              schema:
-                type: string
-                format: binary
-        "404":
-          $ref: '#/components/responses/NotFoundError'
-          
+  
   /offers:
     get:
       summary: Get all the offers available.
@@ -1168,9 +1136,8 @@ paths:
                 schema:
                   $ref:  "#/components/schemas/GenericError"
                 example:
-                  status: 
-                    errorType: "Invalid Credentials"
-                    errors: ["username or password invalid"]
+                  errorType: "Invalid Credentials"
+                  errors: ["username or password invalid"]
   /users:
     get: 
       tags: 
@@ -1874,7 +1841,7 @@ components:
     PatchOps:  ## Schema for performing Patch Operations
       type: object
       properties:
-        $op:
+        op:
           description: The operation to be performed
           type: string
           enum: 
