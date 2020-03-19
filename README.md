@@ -135,7 +135,7 @@ The resources for the system are:
    | name* | ``string``| Name of the category |
    | gstSlabId* | ``string``<br/> ``pattern``: *'^GST[0-9]{2}$*'| tax category Id defined in GSTSlabs|
    | parentCategory* | ``string``<br/> ``pattern``: *'^[A-Z]{3}[1-9][0-9]{3}$*'<br/> `nullable`: ``true`` | #id of parent category (Hierarchical grouping). Refer [Solution Framing](#solution-framing)|
-   | productProps | ``array`` <br/> items: type: ``object `` <br/> ``{ key: 'prop1', values: [...listOfPreDefinedValues ] }`` |  It represent ``category-specific`` property which helps in managing different type of products. Refer [Solution Framing](#solution-framing) |
+   | productProps | ``object`` <br/> ``usecase``: ``{ prop1 : [...listOfPreDefinedValues] }`` |  It represent ``category-specific`` property which helps in managing different type of products. Refer [Solution Framing](#solution-framing) |
    
  ### Products
   **Description**: *(Singular: Product)*  items in the system. <br/>
@@ -445,7 +445,7 @@ errors: [ "error message 1", "error message 2" ]
   "name": "Men's Fashion",
   "gstSlabId": "GST01",
   "parentCategory": null,
-  "productProps": [],
+  "productProps": {},
   "subCategories": [
     {
       "id": "INV1201",
