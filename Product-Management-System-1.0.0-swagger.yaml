@@ -1586,35 +1586,24 @@ components:
           nullable: true
           example: "INV1200"
         productProps:
-          description: The products of this category, will be enforced to include these properties as their attributes. 
-          type: array
-          items:
-            $ref: '#/components/schemas/ProductProp'
+          description: The products of this category, will be enforced to include these properties as their attributes.
+          type: object
+          properties:
+            prop1: # like material
+              type: array
+              items:
+                type: string
+              example: ["Cotton", "Denim","Linen","Rayon"]
+              description: Example ``Prop1=material``, Its value represent possible values that a product attribute can have as options, give null for custom values.
+              nullable: true
           example:
-            - key: material
-              values: ["Cotton", "Denim", "Linen", "Rayon" ]
-            - key: size
-              values: ["2XL", "XL", "L","M","S"]
-
+            material: ["Cotton", "Denim", "Linen","Rayon"]
+            size: ["2XL", "XL", "L","M","S"]    
       required: 
         - categoryId
         - name
         - gstSlabId
-          
-    ProductProp:
-      type: object
-      properties:
-        key: 
-          type: string
-          description: product property name
-          example: "material"
-        values:
-          type: array
-          items:
-            type: string
-          example: ["Cotton", "Denim","Linen","Rayon"]
-          description: It represent possible values that a product attribute can have as options, give null for custom values.
-          nullable: true
+        
     Product:
       type: object
       properties:
@@ -2132,7 +2121,7 @@ components:
         name: "Men's Fashion"
         gstSlabId: "GST01"
         parentCategory: null
-        productProps: []
+        productProps: {}
     MensShirts:
       summary: Men's Shirts
       value:
@@ -2140,13 +2129,10 @@ components:
         name: "Men's Shirt"
         gstSlabId: "GST01"
         parentCategory: "INV1200"
-        productProps: [{
-          "key": "material",
-          "values": ["Cotton", "Denim", "Linen", "Rayon" ]
-        },{
-          "key": "standardSize",
-          "values": ["2XL","XL","L","M","S"]
-        }]
+        productProps: {
+          "material":["Cotton", "Denim", "Linen", "Rayon" ],
+        "standardSize" :["2XL","XL","L","M","S"]
+        }
     MensShoe:
       summary: "Men's Shoe"
       value:
@@ -2154,16 +2140,11 @@ components:
         name: "Men's Shoe"
         gstSlabId: "GST01"
         parentCategory: "INV1200"
-        productProps: [{
-          "key": "material",
-          "values": ["Canvas", "Leather", "Rubber"] ## Options
-        },{
-          "key": "type",
-          "values": ["Sports","Formal","Casual"] ## Options
-        },{
-          "key": "size",
-          "values": ["3","4","5","6","10"] ## Options
-        }]
+        productProps: {
+          "material": ["Canvas", "Leather", "Rubber"] ## Options
+        ,"type": ["Sports","Formal","Casual"] ## Options
+        ,"size" : ["3","4","5","6","10"] ## Options
+        }
     Computers:
       summary: "Computers & Accessories"
       value:
@@ -2171,23 +2152,19 @@ components:
         name: "Computers And Accessories"
         gstSlabId: "GST02"
         parentCategory: null
-        productProps: [{
-          "key": "Specifications",
-          "values": null ## Allowing Custom Values
-        }]
+        productProps: {
+          "specifications": null ## Allowing Custom Values
+        }
     Laptops:
       value:
         categoryId: "INV1011"
         name: "Laptops"
         gstSlabId: "GST02"
         parentCategory:  "INV1010"
-        productProps: [{
-          "key": "CPUType",
-          "values": ["Intel Core i5","Intel Core i7","Intel Core i3","AMD E-Series"]
-        },{
-          "key": "memorySize",
-          "values": ["Up to 2GB","4GB","6GB"]
-        }] ## Similarly Other props can be added
+        productProps: {
+          "CPUType" : ["Intel Core i5","Intel Core i7","Intel Core i3","AMD E-Series"]
+          ,"memorySize": ["Up to 2GB","4GB","6GB"]
+        } ## Similarly Other props can be added
     
     ## Product examples
     DennisLingo:
