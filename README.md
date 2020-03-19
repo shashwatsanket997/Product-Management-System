@@ -323,27 +323,27 @@ Status codes in responses from GlobInv API
 |`404`| Not Found | 
 |`500`| Internal Server Errorr |
 
-#### Patch operation schema
+#### Patch operation schema 
+   Follows: JSON Patch  RFC6902 
   **Description**: Schema used for making a  patch request <br/>
   **Schema**: ``*``: required
   |Attribute| type | Description |
   |---------|------| ----------- |
-  | $op  | `string` <br/> ``enum: [add,remove,update]`` | Operations to be performed |
+  | op  | `string` <br/> ``enum: [add,remove,replace]`` | Operations to be performed |
   | path | `string` | Path of updatation within the resouces. Example: in Category resources, adding value to propductProps/key1 |
   | value | `string` \|\| `array` | Value to be added, new value in case of update and value to be removed| 
  
  **Usecases**: [A must read]
- | $op | path  | value | before | After | Description |
+ | op | path  | value | before | After | Description |
  |-----|-------|-------|------ |-------|-------------|
- |`add`| productProps.prop1 | ``value1`` | [v1,v2,v3] | [v1,v2,v3,value1]|Add the value to the array|
- |`add`| productProps.prop1 | ``[value1,value2]`` | [v1,v2,v3,v4] | [v1,v2,v3,v4,value1,value2]| Add values to the array |
- |`add`| productProps.prop1 | ``value1``| null | [value1] | Creates an array and add the value |
- |`add`| productProps.prop1 <br/> `prop1 does not exists`| ``value1``| - | [``value1``] | New property will be added |  
- |`update`| productProps.prop1[0]| ``value1``| [v1,v2,v3] | [``value1``, v2,v3] | Updates value at position 0 |
- |`update`| productProps.prop1| ``[val1,val2]``| [v1,v2,v3] | [val1,val2] | Replace the array with new array|
- |`remove`| productProps.prop1| ``null``| [v1,v2,v3] | - | Delete the property |
- |`remove`| productProps.prop1| `[v1,v3]`|[v1,v2,v3] | [v2] | delete given values from the array|
- |`remove`| productProps.prop1[0]| `null`|[v1,v2,v3] | [v2,v3] | removes value at position 0 |
+ |`add`| /productProps/prop1/0 | ``value1`` | [v1,v2,v3] | [value1,v1,v2,v3]|Add the value to the array at position 0|
+ |`add`| /productProps/prop1 | ``[value1,value2]`` | [v1,v2,v3,v4] | [value1,value2]| Replace completely  |
+ |`add`| /productProps/prop1 | ``[value1]`` | null | [value1] | Creates an array and add the value |
+ |`add`| /productProps/prop1 <br/> `prop1 does not exists`| ``[value1]``| - | [``value1``] | New property will be added |  
+ |`replace`| /productProps/prop1/0 | ``value1``| [v1,v2,v3] | [``value1``, v2,v3] | Updates value at position 0 |
+ |`replace`| /productProps/prop1 | ``[val1,val2]``| [v1,v2,v3] | [val1,val2] | Replace the array with new array|
+ |`remove`| /productProps/prop1 | ``null`` | [v1,v2,v3] | - | Delete the property |
+ |`remove`| /productProps/prop1/0| `null` | [v1,v2,v3] | [v2,v3] | removes value at position 0 |
  
 
 
