@@ -186,7 +186,7 @@ paths:
     
     patch:
       summary: To update specific attribute in a category
-      description: Helpful in adding, removing, and updating the attributes of a category. Refer usecases and [documentation](https://github.com/shashwatsanket997/Product-Management-System#patch-operation-schema)
+      description: Helpful in adding, removing, and updating the attributes of a category. Refer more detailed usecases [**a must read**] and [documentation](https://github.com/shashwatsanket997/Product-Management-System#patch-operation-schema)
       tags:
         - Categories
       security: 
@@ -205,12 +205,10 @@ paths:
             examples:
               AddValueToProductProps:
                 $ref: "#/components/examples/AddValueToProductProps"
-              AddValuesToProductProps:
-                $ref: "#/components/examples/AddValuesToProductProps"
               RemoveValueToProductProps:
                 $ref: "#/components/examples/RemoveValueToProductProps"
-              RemoveValuesToProductProps:
-                $ref: "#/components/examples/RemoveValuesToProductProps"
+              RemovePropertyFromProductProps:
+                $ref: "#/components/examples/RemovePropertyFromProductProps"
               UpdateAttributes:
                 $ref: "#/components/examples/UpdateAttributes"
       
@@ -460,7 +458,7 @@ paths:
           $ref: '#/components/responses/NotFoundError'
     patch:
       summary: To update specific attribute in a product
-      description: Helpful in adding, removing, and updating the attributes.Refer usecases and [documentation](https://github.com/shashwatsanket997/Product-Management-System#patch-operation-schema)
+      description: Helpful in adding, removing, and updating the attributes.Refer more detailed usecases [**a must read**]  [documentation](https://github.com/shashwatsanket997/Product-Management-System#patch-operation-schema)
       security: 
         - bearerAuth: []
       tags:
@@ -479,8 +477,8 @@ paths:
             examples:
               AddRemoveValueToKeywords:
                 $ref: "#/components/examples/AddRemoveValue"
-              AddRemoveValuesToKeywords:
-                $ref: "#/components/examples/AddRemoveValues"
+              AddRemoveProperty:
+                $ref: "#/components/examples/AddRemoveProperty"
               UpdateAnAttribute:
                 $ref: "#/components/examples/UpdateAnAttribute"
       
@@ -1882,7 +1880,7 @@ components:
           enum: 
             - add
             - remove
-            - update
+            - replace
         path:
           description: The path of the attribute, which will be the operand
           type: string
@@ -2214,40 +2212,32 @@ components:
       summary: Add value to productProps->material
       value:
         [{
-          "$op": "add",
-          "path": "productProps/material",
+          "op": "add",
+          "path": "/productProps/material/0",
           "value": "silk"
-        }]
-    AddValuesToProductProps:
-      summary: Add multiple values tp productProps->material
-      value:
-        [{
-          "$op": "add",
-          "path": "productProps/material",
-          "value": ["Silk","Khadi"]
         }]
     RemoveValueToProductProps:
       summary: Remove value from productProps->material
       value:
         [{
-          "$op": "remove",
-          "path": "productProps/material",
+          "op": "remove",
+          "path": "/productProps/material/0",
           "value": "Cotton"
         }]
-    RemoveValuesToProductProps:
-      summary: Remove multiple values from productProps->material
+    RemovePropertyFromProductProps:
+      summary: Remove property from productProps
       value:
         [{
-          "$op": "remove",
-          "path": "productProps/material",
-          "value": ["Cotton","Rayon"]
+          "op": "remove",
+          "path": "/productProps/material",
+          "value": null
         }]
     UpdateAttributes:
       summary: Update attributes(Except id)
       value:
         [{
-          "$op": "update",
-          "path": "gstSlabId",
+          "op": "replace",
+          "path": "/gstSlabId",
           "value": "GST03"
         }]
     ## For products
@@ -2255,56 +2245,56 @@ components:
       summary: Add or remove value to keywords
       value:
         [{
-          "$op": "add",
-          "path": "keyword",
-          "value" : "new value"
+          "op": "add",
+          "path": "/keywords/0",
+          "value" : "new value at index 0"
         },{
-          "$op": "remove",
-          "path": "keyword",
-          "value": "old value"
+          "op": "remove",
+          "path": "/keywords/0",
+          "value": "value at index 0"
         }]
-    AddRemoveValues:
-      summary:  Add or Remove muliple values to keywords
+    AddRemoveProperty:
+      summary:  Add or Remove property
       value:
         [{
-          "$op": "add",
-          "path": "keyword",
+          "op": "add",
+          "path": "/newProperty",
           "value": ["new value1","new value2"]
         },{
-          "$op": "remove",
-          "path": "keyword",
-          "value": ["old value1","old value2"]
+          "op": "remove",
+          "path": "/oldProperty",
+          "value": null
         }]
     UpdateAnAttribute:
       summary: Update an attribute
       value: 
         [{
-          "$op": "update",
-          "path": "price",
+          "op": "replace",
+          "path": "/price",
           "value": 699
         }]
     UpdatePassword:
       summary: Update password
       value:
         [{
-          "$op": "update",
-          "path": "password",
+          "op": "replace",
+          "path": "/password",
           "value": "new-password"
         }]
     UpdateName:
       summary: Update name
       value:
         [{
-          "$op": "update",
-          "path": "name",
+          "op": "replace",
+          "path": "/name",
           "value": "new-name"
         }]
     UpdateUserType:
       summary: Upgrade the User permission scope.
       value:
         [{
-          "$op": "update",
-          "path": "userType",
+          "op": "replace",
+          "path": "/userType",
           "value": "admin"
         }]
         
