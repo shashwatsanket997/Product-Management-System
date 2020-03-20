@@ -2,7 +2,18 @@ openapi: 3.0.0
 info:
   version: '1.0.0'
   title: 'REST APIs for GlobInv | Product Management System'
-  description: 'GlobInv is a product management system which manages different categories of products along with stock-tracking, filtering and billings.'
+  description: >
+    **GlobInv** is a product management system which manages **different** categories of products along with **stock-tracking**(Reorder Points), **filtering** and **billings.** <br/><br/>
+    
+    ****
+    
+    For detailed **Resource** definations refer [documentation](https://github.com/shashwatsanket997/Product-Management-System)<br/>
+  
+    Refer [Solution Framing **(A must read)**](https://github.com/shashwatsanket997/Product-Management-System#solution-framing) To know the background of ``GlobInv``.
+    <br/>
+    This specification document contains rich usecase references for better understanding and knowing the usability of REST API in context to ``GlobInv``.
+    <br/>
+    
   
 # Added by API Auto Mocking Plugin
 
@@ -118,7 +129,7 @@ paths:
             
   /categories/{categoryId}:
     get:
-      summary: Get details of a category.
+      summary: Get details of a category. And SubCategories via action query parameter.
       tags:
         - Categories
       operationId: getCategory
@@ -1474,35 +1485,81 @@ paths:
             $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-    put:
-      summary: Update a Reorder Point.
-      security: 
-        - bearerAuth: []
+
+  /reorderPoints/{productSKU}:  
+    get:
+      summary: Get reorder point of a product
       tags:
         - ReorderPoints
-      operationId: updateReorderPoint
+      operationId: getReorderPoint
+      parameters:
+        - $ref: "#/components/parameters/ProductSKU"
+      responses:
+        '200':
+          description: Details of a reorder point
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReorderPoint'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+    put:
+      summary: To edit a reorder point.
+      tags:
+        - ReorderPoints
+      operationId: updateReorderPoint 
+      security: 
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ProductSKU"
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ReorderPoint"
+              $ref: '#/components/schemas/ReorderPoint'
       responses:
         '200':
-            description: Reorder point successfully updated.
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/GenericResponse"
-                example:
-                  status: "success"
-                  message: "Reorder point successfully updated"
+          description: Reorder point successfully updated. 
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/GenericResponseWithLinks"
+              example:
+                status: success
+                message: "ReorderPoint updated successfully"
+                href: "/reorderPoints/hewl2221md21"
+                  
         '400':
             $ref: '#/components/responses/ValidationError'
         '401':
             $ref: '#/components/responses/UnauthorizedError'
         '404':
             $ref: '#/components/responses/NotFoundError'
+            
+    delete:
+      summary: To delete a reorder point.
+      tags:
+        - ReorderPoints
+      operationId: deleteReorderPoint
+      security: 
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ProductSKU"
+      responses:
+        '200':
+          description: Successfully deleted reorder point.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+              example:
+                status: "success"
+                message: "Successfully deleted the reorder point"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError' 
+   
   /:
     get:
       operationId: "getEndpoints"
