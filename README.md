@@ -1,10 +1,11 @@
 # GlobInv | Product Management System
 GlobInv is a product management system which manages different categories of products along with stock-tracking, filtering and billings. A REST API driven system built on `node js` with `OpenAPI swagger` [documentation](#quick-start).
+
 ## Overview 
 
 - [Solution Framing](#solution-framing)
 - [System Features](#system-features)
-- [Quick Start(OpenAPI Specs)](#quick-start)
+- [Quick Start(**OpenAPI Specs**)](#quick-start)
 - [Resources](#resources)
 - [Client SDK](#client-sdk)
 
