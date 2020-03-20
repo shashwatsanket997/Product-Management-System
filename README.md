@@ -111,7 +111,8 @@ category = {
 +  Managing different Tax slabs as per ``GST taxation`` of  ``India``.
 
 ## Quick Start
-### OpenAPI Swagger Specification: [click here](https://app.swaggerhub.com/apis-docs/S3649/Product-Management-System/1.0.0)
+### OpenAPI Swagger Specification[Documentation View]: [click here](https://app.swaggerhub.com/apis-docs/S3649/Product-Management-System/1.0.0)
+### Specification with YAML on swaggerhub [click here](https://app.swaggerhub.com/apis/S3649/Product-Management-System/1.0.0) 
 
 ## Resources
 The resources for the system are: 
