@@ -118,7 +118,7 @@ paths:
             
   /categories/{categoryId}:
     get:
-      summary: Get details of a category
+      summary: Get details of a category.
       tags:
         - Categories
       operationId: getCategory
@@ -126,7 +126,7 @@ paths:
         - $ref: "#/components/parameters/CategoryId"
         - in: query
           name: subCategories
-          description: To fetch all the ``subcategories`` of the given category.
+          description: To fetch all the ``subcategories`` of the given category. Here ``subCategories`` is used as ``Action`` Query Parameter.
           schema:
             type: boolean
           required: false
@@ -995,15 +995,32 @@ paths:
       tags:
         - Offers
       operationId: getOffers
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
       responses:
         '200':
           description: List of all offers
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Offer"
+                type: object
+                properties: 
+                  docs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Offer"
+                  page:
+                    type: integer
+                    minimum: 1
+                    example: 1 
+                  pages:
+                    type: integer
+                    minimum: 1
+                    example: 5 
+                    description: Total pages
+            
+                 
     post:
       summary: Create an offer.
       tags:
