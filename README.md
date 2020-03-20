@@ -218,7 +218,7 @@ The resources for the system are:
   | productSKU* | `string` | Product SKU |
   | discountRate* | `number` <br/> minimum: 0 <br/> maximum: 100 | Rate of discount | 
   | name* | `string` | Name of offer Example: "Winter Sale" |
-  | expiry* | `string($date)` | Expiry date of offer |
+  | expiry* | `string($date)` | Expiry date of offer(In ISO Date String) |
 ### GSTSlabs:
   **Description**: *(Singular: GSTSlab)* Different Tax Slabs as per `GST India`<br/>
   **Schema**: ``*``: required
