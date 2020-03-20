@@ -94,7 +94,7 @@ category = {
   } 
   ```
   ##### Inference (A must read)
-  From the above example, we see that the  product HP-14 has 3 ``Category-specific`` property as ``Specifications`` from ``Computers and Accessories`` category, ``CPUType`` and ``memorySize`` from ``Laptops`` category. **Reason(why Specifications is present in product defination?)**: As Laptops is child category of Computers and Accessories thus ``inheriting`` parent's ``productProps``(attribute) here ``Specifications`` thus calling as ``Attribute Inheritance``. Similary if the ``property`` both in parent and child is ``same`` then, ``child`` property will be ``used`` thus ``overriding`` the parent property. This is ``Attribute Overriding``.   
+  From the above example, we see that the  product HP-14 has 3 ``Category-specific`` property as ``Specifications`` from ``Computers and Accessories`` category, ``CPUType`` and ``memorySize`` from ``Laptops`` category. **Reason(why Specifications is present in product defination?)**: As Laptops is child category of Computers and Accessories thus ``inheriting`` parent's ``productProps``(attribute) here ``Specifications`` thus calling as ``Attribute Inheritance``. Similary if the ``property`` both in parent and child is ``same`` then, ``child`` property will be ``used`` thus ``overriding`` the parent property. This is ``Attribute Overriding``.  
   
 ## System Features
 
@@ -113,6 +113,7 @@ category = {
 ## Quick Start
 ### OpenAPI Swagger Specification[Documentation View]: [click here](https://app.swaggerhub.com/apis-docs/S3649/Product-Management-System/1.0.0)
 ### Specification with YAML on swaggerhub [click here](https://app.swaggerhub.com/apis/S3649/Product-Management-System/1.0.0) 
+### Implementation on ``NodeJs`` [click here](https://github.com/shashwatsanket997/GlobInv) 
 
 ## Resources
 The resources for the system are: 
